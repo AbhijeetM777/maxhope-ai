@@ -16,30 +16,31 @@ const MIME = {
   '.woff2':'font/woff2',
 };
 
+const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY || '';
+
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type,x-api-key',
+  'Access-Control-Allow-Headers': 'Content-Type',
 };
 
 // ── Anthropic proxy ───────────────────────────────────────────────────────────
 function proxyAnthropic(req, res) {
+  if (!ANTHROPIC_KEY) {
+    res.writeHead(503, { 'Content-Type': 'application/json', ...CORS_HEADERS });
+    return res.end(JSON.stringify({ error: 'Server not configured — set ANTHROPIC_API_KEY env variable.' }));
+  }
+
   let body = '';
   req.on('data', c => (body += c));
   req.on('end', () => {
-    const apiKey = req.headers['x-api-key'] || '';
-    if (!apiKey.startsWith('sk-ant-')) {
-      res.writeHead(401, { 'Content-Type': 'application/json', ...CORS_HEADERS });
-      return res.end(JSON.stringify({ error: 'Missing or invalid Anthropic API key' }));
-    }
-
     const options = {
       hostname: 'api.anthropic.com',
       path:     '/v1/messages',
       method:   'POST',
       headers: {
         'Content-Type':      'application/json',
-        'x-api-key':         apiKey,
+        'x-api-key':         ANTHROPIC_KEY,
         'anthropic-version': '2023-06-01',
       },
     };

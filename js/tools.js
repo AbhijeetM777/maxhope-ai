@@ -1,6 +1,103 @@
 /* ============================================
-   NexusAI - Tool Simulation Engine
+   Maxhope.AI - Tool Simulation Engine
    ============================================ */
+
+// ---- Project Manager (saves deployments to localStorage) ----
+const ProjectManager = {
+  _key: 'nexusai_projects',
+
+  getAll() {
+    return JSON.parse(localStorage.getItem(this._key) || '[]');
+  },
+
+  save(project) {
+    const projects = this.getAll();
+    project.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    project.createdAt = new Date().toISOString();
+    project.status = 'deployed';
+    projects.unshift(project);
+    localStorage.setItem(this._key, JSON.stringify(projects));
+    // Update user project count
+    Auth.updateUsage('projects');
+    return project;
+  },
+
+  remove(id) {
+    const projects = this.getAll().filter(p => p.id !== id);
+    localStorage.setItem(this._key, JSON.stringify(projects));
+  },
+
+  // Show deployment success modal with details
+  showDeployModal(project) {
+    const existing = document.getElementById('deploy-success-modal');
+    if (existing) existing.remove();
+
+    const base = typeof getBasePath === 'function' ? getBasePath() : '';
+    const liveUrl = `https://app.maxhope.ai/${project.type}/${project.id}`;
+    const embedCode = `<script src="https://cdn.maxhope.ai/embed/${project.id}.js"><\/script>`;
+
+    const detailsMap = {
+      automation: { icon: '&#9889;', label: 'Workflow', actions: `
+        <div class="deploy-detail"><span class="deploy-detail-label">Webhook URL</span><code class="deploy-detail-code">https://api.maxhope.ai/hooks/${project.id}</code><button class="btn btn-ghost btn-sm" onclick="copyToClipboard('https://api.maxhope.ai/hooks/${project.id}')">Copy</button></div>
+        <div class="deploy-detail"><span class="deploy-detail-label">API Endpoint</span><code class="deploy-detail-code">POST /api/v1/automations/${project.id}/run</code><button class="btn btn-ghost btn-sm" onclick="copyToClipboard('https://api.maxhope.ai/v1/automations/${project.id}/run')">Copy</button></div>
+        <div class="deploy-detail"><span class="deploy-detail-label">Integrations</span><span>Zapier, Make.com, HubSpot, Slack</span></div>`
+      },
+      website: { icon: '&#127760;', label: 'Website', actions: `
+        <div class="deploy-detail"><span class="deploy-detail-label">Live URL</span><code class="deploy-detail-code">${liveUrl}</code><button class="btn btn-ghost btn-sm" onclick="copyToClipboard('${liveUrl}')">Copy</button></div>
+        <div class="deploy-detail"><span class="deploy-detail-label">Custom Domain</span><span>Connect via Settings → Domains</span></div>
+        <div class="deploy-detail"><span class="deploy-detail-label">Hosting</span><span>Vercel Edge Network (99.9% uptime)</span></div>`
+      },
+      chatbot: { icon: '&#129302;', label: 'Chatbot', actions: `
+        <div class="deploy-detail"><span class="deploy-detail-label">Embed Code</span><code class="deploy-detail-code">${embedCode.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code><button class="btn btn-ghost btn-sm" onclick="copyToClipboard('${embedCode}')">Copy</button></div>
+        <div class="deploy-detail"><span class="deploy-detail-label">Widget URL</span><code class="deploy-detail-code">${liveUrl}</code><button class="btn btn-ghost btn-sm" onclick="copyToClipboard('${liveUrl}')">Copy</button></div>
+        <div class="deploy-detail"><span class="deploy-detail-label">Platforms</span><span>Shopify, WordPress, Wix, Squarespace, Custom HTML</span></div>`
+      },
+      microsaas: { icon: '&#128200;', label: 'SaaS Blueprint', actions: `
+        <div class="deploy-detail"><span class="deploy-detail-label">Blueprint PDF</span><code class="deploy-detail-code">${project.name}-blueprint.pdf</code><button class="btn btn-ghost btn-sm" onclick="showToast('PDF downloaded!','success')">Download</button></div>
+        <div class="deploy-detail"><span class="deploy-detail-label">Code Scaffold</span><code class="deploy-detail-code">${project.name.toLowerCase().replace(/\\s/g,'-')}-scaffold.zip</code><button class="btn btn-ghost btn-sm" onclick="showToast('Code scaffold downloaded!','success')">Download</button></div>
+        <div class="deploy-detail"><span class="deploy-detail-label">Stack</span><span>React, Node.js, PostgreSQL, Stripe, Vercel</span></div>`
+      },
+      email: { icon: '&#128231;', label: 'Email Campaign', actions: `
+        <div class="deploy-detail"><span class="deploy-detail-label">Campaign ID</span><code class="deploy-detail-code">campaign_${project.id}</code><button class="btn btn-ghost btn-sm" onclick="copyToClipboard('campaign_${project.id}')">Copy</button></div>
+        <div class="deploy-detail"><span class="deploy-detail-label">Status</span><span class="tag tag-green">Scheduled</span></div>
+        <div class="deploy-detail"><span class="deploy-detail-label">Integrations</span><span>Mailchimp, SendGrid, Lemlist, Apollo, Instantly</span></div>`
+      },
+      cloud: { icon: '&#9729;&#65039;', label: 'Cloud Report', actions: `
+        <div class="deploy-detail"><span class="deploy-detail-label">Report PDF</span><code class="deploy-detail-code">${project.name}-report.pdf</code><button class="btn btn-ghost btn-sm" onclick="showToast('Report downloaded!','success')">Download</button></div>
+        <div class="deploy-detail"><span class="deploy-detail-label">Dashboard</span><code class="deploy-detail-code">${liveUrl}/monitor</code><button class="btn btn-ghost btn-sm" onclick="copyToClipboard('${liveUrl}/monitor')">Copy</button></div>
+        <div class="deploy-detail"><span class="deploy-detail-label">Providers</span><span>AWS, Azure, GCP</span></div>`
+      },
+      content: { icon: '&#9997;&#65039;', label: 'Content', actions: `
+        <div class="deploy-detail"><span class="deploy-detail-label">Content ID</span><code class="deploy-detail-code">content_${project.id}</code><button class="btn btn-ghost btn-sm" onclick="copyToClipboard('content_${project.id}')">Copy</button></div>
+        <div class="deploy-detail"><span class="deploy-detail-label">Publish To</span><span>WordPress, Medium, LinkedIn, Twitter</span></div>
+        <div class="deploy-detail"><span class="deploy-detail-label">Status</span><span class="tag tag-green">Ready to Publish</span></div>`
+      }
+    };
+
+    const d = detailsMap[project.type] || detailsMap.automation;
+
+    const html = `
+      <div class="recharge-modal-overlay" id="deploy-success-modal">
+        <div class="recharge-modal-box" style="max-width:520px;">
+          <button class="recharge-modal-close" onclick="document.getElementById('deploy-success-modal').remove()">&times;</button>
+          <div style="text-align:center;margin-bottom:20px;">
+            <div style="font-size:48px;margin-bottom:8px;">&#10003;</div>
+            <div class="recharge-modal-title">${d.label} Deployed!</div>
+            <div class="recharge-modal-subtitle"><strong>${project.name}</strong> is now live</div>
+          </div>
+          <div class="deploy-details-box">
+            ${d.actions}
+          </div>
+          <div style="display:flex;gap:10px;margin-top:20px;">
+            <a href="${base}projects.html" class="btn btn-secondary" style="flex:1;text-align:center;">View My Projects</a>
+            <button class="btn btn-primary" style="flex:1;" onclick="document.getElementById('deploy-success-modal').remove()">Done</button>
+          </div>
+        </div>
+      </div>`;
+
+    document.body.insertAdjacentHTML('beforeend', html);
+  }
+};
 
 // ---- Simulate AI Generation ----
 function simulateAI(outputEl, callback, delay = 2500) {
@@ -79,7 +176,7 @@ function generateAutomation(formData) {
         </div>
       `).join('') +
       `<div style="margin-top:20px;display:flex;gap:8px;">
-        <button class="btn btn-primary btn-sm" onclick="showToast('Workflow deployed!','success')">Deploy Workflow</button>
+        <button class="btn btn-primary btn-sm" onclick="deployProject('automation','${type} Automation','${desc.replace(/'/g,"").slice(0,60)}')">Deploy Workflow</button>
         <button class="btn btn-secondary btn-sm" onclick="showToast('Exported to JSON','success')">Export JSON</button>
       </div>`;
   });
@@ -120,7 +217,7 @@ function generateWebsite(formData) {
         </div>
       </div>
       <div style="margin-top:16px;display:flex;gap:8px;">
-        <button class="btn btn-primary btn-sm" onclick="showToast('Website deployed!','success')">Deploy Live</button>
+        <button class="btn btn-primary btn-sm" onclick="deployProject('website','${name}','${type} for ${industry}')">Deploy Live</button>
         <button class="btn btn-secondary btn-sm" onclick="showToast('Code downloaded!','success')">Download Code</button>
         <button class="btn btn-ghost btn-sm" onclick="showToast('Opened in editor','info')">Edit</button>
       </div>`;
@@ -177,7 +274,7 @@ function generateChatbot(formData) {
         </div>
       </div>
       <div style="margin-top:16px;display:flex;gap:8px;">
-        <button class="btn btn-primary btn-sm" onclick="showToast('Chatbot deployed!','success')">Deploy</button>
+        <button class="btn btn-primary btn-sm" onclick="deployProject('chatbot','${botName}','${personality} ${purpose} chatbot')">Deploy</button>
         <button class="btn btn-secondary btn-sm" onclick="copyToClipboard('<script src=\\'nexusai.com/chatbot/embed.js\\'></script>')">Copy Embed Code</button>
       </div>`;
   });
@@ -261,7 +358,7 @@ function generateMicroSaaS(formData) {
       </div>
 
       <div style="display:flex;gap:8px;">
-        <button class="btn btn-primary btn-sm" onclick="showToast('Blueprint exported!','success')">Export PDF</button>
+        <button class="btn btn-primary btn-sm" onclick="deployProject('microsaas','${idea.slice(0,40)}','SaaS for ${market}')">Export &amp; Deploy</button>
         <button class="btn btn-secondary btn-sm" onclick="showToast('Code scaffold generated!','success')">Generate Code</button>
       </div>`;
   }, 3000);
@@ -320,7 +417,7 @@ function generateEmailSequence(formData) {
         </div>
       `).join('')}
       <div style="margin-top:16px;display:flex;gap:8px;">
-        <button class="btn btn-primary btn-sm" onclick="showToast('Campaign scheduled!','success')">Schedule Campaign</button>
+        <button class="btn btn-primary btn-sm" onclick="deployProject('email','${campaign}','${tone} campaign for ${audience}')">Schedule Campaign</button>
         <button class="btn btn-secondary btn-sm" onclick="showToast('Exported to CSV!','success')">Export All</button>
       </div>`;
   });
@@ -392,7 +489,7 @@ function generateCloudAnalysis(formData) {
       </div>
 
       <div style="display:flex;gap:8px;">
-        <button class="btn btn-primary btn-sm" onclick="showToast('Report exported!','success')">Export Report</button>
+        <button class="btn btn-primary btn-sm" onclick="deployProject('cloud','${provider} Cloud Analysis','Cost optimization for ${provider}')">Export &amp; Deploy</button>
         <button class="btn btn-secondary btn-sm" onclick="showToast('Consultation booked!','success')">Book Consultation</button>
       </div>`;
   }, 3000);
@@ -449,8 +546,14 @@ function generateContent(formData) {
       <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px;font-size:14px;color:var(--text-secondary);line-height:1.8;white-space:pre-wrap;max-height:400px;overflow-y:auto;" id="content-text">${c.body}</div>
       <div style="margin-top:16px;display:flex;gap:8px;">
         <button class="btn btn-primary btn-sm" onclick="copyToClipboard(document.getElementById('content-text').textContent)">Copy Content</button>
-        <button class="btn btn-secondary btn-sm" onclick="showToast('Exported!','success')">Export</button>
+        <button class="btn btn-secondary btn-sm" onclick="deployProject('content','${c.title.replace(/'/g,"")}','${type} content about ${topic.replace(/'/g,"")}')">Publish &amp; Save</button>
         <button class="btn btn-ghost btn-sm" onclick="showToast('Regenerating...','info')">Regenerate</button>
       </div>`;
   });
+}
+
+// ---- Deploy project helper (called by deploy buttons) ----
+function deployProject(type, name, description) {
+  const project = ProjectManager.save({ type, name, description });
+  ProjectManager.showDeployModal(project);
 }

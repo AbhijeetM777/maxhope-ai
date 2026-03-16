@@ -295,7 +295,7 @@ function renderSidebar() {
           <a href="${base}dashboard.html" class="sidebar-link ${currentPage === 'dashboard.html' ? 'active' : ''}">
             <span class="link-icon">&#9638;</span> Dashboard
           </a>
-          <a href="#" class="sidebar-link">
+          <a href="${base}projects.html" class="sidebar-link ${currentPage === 'projects.html' ? 'active' : ''}">
             <span class="link-icon">&#128193;</span> My Projects
           </a>
           <a href="#" class="sidebar-link">

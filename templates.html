@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Template Hub — Maxhope.AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!-- React + Babel via CDN (no build step needed) -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { background: #0a0a0a; font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 4px; }
+  input::placeholder { color: rgba(255,255,255,0.28); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+  #app { min-height: 100vh; }
+
+  /* API Key Modal */
+  .key-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .key-modal {
+    background: #111; border: 1px solid rgba(232,55,58,0.4); border-radius: 20px;
+    padding: 36px 32px; max-width: 480px; width: 100%;
+    box-shadow: 0 20px 60px rgba(232,55,58,0.15);
+    animation: fadeIn 0.3s ease;
+  }
+  .key-modal h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; color: #fff; letter-spacing: 2px; margin-bottom: 8px; }
+  .key-modal p { color: rgba(255,255,255,0.55); font-size: 0.84rem; line-height: 1.6; margin-bottom: 24px; }
+  .key-input {
+    width: 100%; background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.2); border-radius: 10px;
+    padding: 12px 14px; color: #fff; font-size: 0.9rem;
+    outline: none; font-family: 'Syne', monospace; letter-spacing: 1px;
+    transition: border-color 0.2s;
+  }
+  .key-input:focus { border-color: #e8373a; }
+  .key-btn {
+    width: 100%; margin-top: 14px; padding: 13px;
+    background: #e8373a; border: none; border-radius: 10px;
+    color: #fff; font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 0.85rem; letter-spacing: 1.5px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .key-btn:hover { background: #cc2c2f; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(232,55,58,0.4); }
+  .key-note {
+    margin-top: 12px; font-size: 0.72rem; color: rgba(255,255,255,0.35);
+    text-align: center; line-height: 1.5;
+  }
+  .key-note a { color: rgba(232,55,58,0.7); text-decoration: none; }
+  .key-note a:hover { color: #e8373a; }
+
+  /* Navbar */
+  .page-nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,10,0.85); backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    padding: 0 24px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .page-nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: #fff; letter-spacing: 2px; text-decoration: none; }
+  .page-nav-logo span { color: #e8373a; }
+  .page-nav-right { display: flex; align-items: center; gap: 16px; }
+  .nav-key-btn {
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px; padding: 6px 12px; color: rgba(255,255,255,0.6);
+    font-family: 'Syne', sans-serif; font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 1px; cursor: pointer; transition: all 0.2s;
+  }
+  .nav-key-btn:hover { border-color: #e8373a; color: #e8373a; }
+  .nav-key-status { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+  .nav-back { color: rgba(255,255,255,0.5); font-size: 0.78rem; text-decoration: none; transition: color 0.2s; }
+  .nav-back:hover { color: #fff; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="text/babel">
+const { useState, useCallback } = React;
+
+/* ── DATA ──────────────────────────────────────────────────────────────────── */
+const TOOLS = [
+  {
+    id: "automation", icon: "⚡", name: "AI Automation Builder",
+    color: "#FF6B6B", tags: ["WORKFLOWS", "CRM", "WHATSAPP"],
+    templates: [
+      {
+        title: "E-commerce Order Workflow", icon: "🛒",
+        desc: "Automate order confirmations, shipping updates & review requests",
+        fields: [
+          { label: "Store Name", key: "storeName", placeholder: "e.g. MyShop India" },
+          { label: "Product Type", key: "productType", placeholder: "e.g. Handmade Jewellery" },
+          { label: "CRM Tool", key: "crm", placeholder: "e.g. HubSpot, Zoho" },
+        ],
+        prompt: (d) => `Create a complete e-commerce order automation workflow for ${d.storeName||"our store"}, selling ${d.productType||"products"}, using ${d.crm||"a CRM"}. Include: order confirmation triggers, shipping update sequences, post-delivery review request automation, and abandoned cart recovery. Format as a clear step-by-step workflow with trigger → action → condition logic.`
+      },
+      {
+        title: "Lead Nurturing CRM Flow", icon: "🎯",
+        desc: "Score & nurture leads from capture to close automatically",
+        fields: [
+          { label: "Business Type", key: "bizType", placeholder: "e.g. B2B SaaS" },
+          { label: "Lead Source", key: "leadSource", placeholder: "e.g. LinkedIn, Website" },
+          { label: "Sales Cycle (days)", key: "cycle", placeholder: "e.g. 30" },
+        ],
+        prompt: (d) => `Design a lead nurturing CRM automation for a ${d.bizType||"B2B"} business. Leads come from ${d.leadSource||"website"} with a ${d.cycle||"30"}-day sales cycle. Include lead scoring criteria (5 signals), nurture email sequence (5 emails with subject lines), task assignments for sales reps, and deal stage transitions. Provide the complete workflow logic.`
+      },
+      {
+        title: "WhatsApp Follow-up Bot", icon: "📱",
+        desc: "Automated WhatsApp message sequences for sales & support",
+        fields: [
+          { label: "Business Name", key: "biz", placeholder: "e.g. Dental Clinic" },
+          { label: "Use Case", key: "useCase", placeholder: "e.g. Appointment reminder" },
+          { label: "Language", key: "lang", placeholder: "e.g. English, Hindi" },
+        ],
+        prompt: (d) => `Create a WhatsApp Business automation flow for ${d.biz||"our business"} for ${d.useCase||"customer follow-up"} in ${d.lang||"English"}. Include: initial message, 3 follow-up templates with time delays, opt-out handling, and response-based branching. Write all WhatsApp message templates ready to deploy on WhatsApp Business API.`
+      },
+      {
+        title: "Employee Onboarding Workflow", icon: "👥",
+        desc: "Automate the entire new hire onboarding process end-to-end",
+        fields: [
+          { label: "Company Name", key: "company", placeholder: "e.g. TechCorp" },
+          { label: "Department", key: "dept", placeholder: "e.g. Engineering" },
+          { label: "Onboarding Duration", key: "duration", placeholder: "e.g. 30 days" },
+        ],
+        prompt: (d) => `Build an employee onboarding automation workflow for ${d.company||"our company"}'s ${d.dept||"operations"} department spanning ${d.duration||"30 days"}. Include: pre-joining tasks checklist, Day 1 automation triggers, weekly check-in sequences, training assignment logic, manager notification alerts, and HR task automation. Provide the complete workflow with all steps, triggers, and actions.`
+      }
+    ]
+  },
+  {
+    id: "website", icon: "🌐", name: "AI Website Builder",
+    color: "#4A90D9", tags: ["WEBSITES", "LANDING PAGES"],
+    templates: [
+      {
+        title: "SaaS Product Landing Page", icon: "🚀",
+        desc: "High-converting landing page structure for software products",
+        fields: [
+          { label: "Product Name", key: "product", placeholder: "e.g. TaskFlow" },
+          { label: "Core Benefit", key: "benefit", placeholder: "e.g. Save 10 hrs/week" },
+          { label: "Target Audience", key: "audience", placeholder: "e.g. Freelancers" },
+        ],
+        prompt: (d) => `Generate a complete SaaS landing page structure for "${d.product||"our product"}" — a tool that helps ${d.audience||"professionals"} to ${d.benefit||"work smarter"}. Include: hero headline + subheadline + CTA, 3 feature sections with copy, social proof section, pricing section (3 tiers with feature lists), FAQ (5 Q&As), and closing CTA. Write all copy in full, production-ready.`
+      },
+      {
+        title: "Personal Portfolio Site", icon: "💼",
+        desc: "Professional portfolio to showcase your work and land clients",
+        fields: [
+          { label: "Your Name", key: "name", placeholder: "e.g. Arjun Mehta" },
+          { label: "Profession", key: "role", placeholder: "e.g. Full Stack Developer" },
+          { label: "Top Skills", key: "skills", placeholder: "e.g. React, Node, AWS" },
+        ],
+        prompt: (d) => `Create a complete portfolio website content plan for ${d.name||"the developer"}, a ${d.role||"developer"} skilled in ${d.skills||"web technologies"}. Include: hero tagline & bio (2 versions), skills showcase section, 3 sample project descriptions with outcomes, 3 testimonial templates, services section with pricing, contact section copy, and SEO meta description. Make it compelling and career-advancing.`
+      },
+      {
+        title: "Restaurant Website", icon: "🍽️",
+        desc: "Mouth-watering website to bring in more footfall & orders",
+        fields: [
+          { label: "Restaurant Name", key: "resto", placeholder: "e.g. Spice Garden" },
+          { label: "Cuisine Type", key: "cuisine", placeholder: "e.g. South Indian" },
+          { label: "Location", key: "location", placeholder: "e.g. Chennai, Tamil Nadu" },
+        ],
+        prompt: (d) => `Generate complete website content for ${d.resto||"our restaurant"}, a ${d.cuisine||"Indian"} restaurant in ${d.location||"India"}. Include: hero tagline + story, about section, featured menu section (8 items with names, descriptions, prices), ambiance/experience section, online reservation CTA copy, special offers section, and Google-friendly footer. Write all content ready to publish.`
+      },
+      {
+        title: "Agency Landing Page", icon: "🎨",
+        desc: "Convert visitors into clients with a sharp agency website",
+        fields: [
+          { label: "Agency Name", key: "agency", placeholder: "e.g. PixelForge" },
+          { label: "Service Type", key: "service", placeholder: "e.g. UI/UX Design" },
+          { label: "Industries Served", key: "industries", placeholder: "e.g. Fintech, EdTech" },
+        ],
+        prompt: (d) => `Write a complete agency landing page for ${d.agency||"our agency"}, specializing in ${d.service||"digital services"} for ${d.industries||"tech companies"} clients. Include: powerful headline + subheadline, services section (4 services with descriptions), process section (4 steps), 3 case study teasers, pricing packages (3 tiers), trust indicators section, and closing CTA. All copy ready to use.`
+      }
+    ]
+  },
+  {
+    id: "chatbot", icon: "🤖", name: "AI Chatbot Creator",
+    color: "#50C878", tags: ["SUPPORT", "WHATSAPP"],
+    templates: [
+      {
+        title: "Customer Support Bot", icon: "🎧",
+        desc: "Handle 80% of support tickets automatically around the clock",
+        fields: [
+          { label: "Company Name", key: "company", placeholder: "e.g. CloudStore" },
+          { label: "Product/Service", key: "product", placeholder: "e.g. SaaS subscription" },
+          { label: "Top Issues", key: "issues", placeholder: "e.g. billing, login, refund" },
+        ],
+        prompt: (d) => `Design a complete customer support chatbot for ${d.company||"our company"} (${d.product||"software"}). Build a full conversation flow covering: welcome greeting, intent detection (5 intents), FAQ handling for ${d.issues||"common issues"}, ticket escalation to human agent, ticket creation trigger, CSAT survey. Include all bot messages, quick reply buttons, and the complete decision tree logic.`
+      },
+      {
+        title: "Lead Qualification Bot", icon: "🏆",
+        desc: "Qualify website leads 24/7 and book demo calls automatically",
+        fields: [
+          { label: "Product Name", key: "product", placeholder: "e.g. Analytics Pro" },
+          { label: "Ideal Customer", key: "icp", placeholder: "e.g. Marketing managers" },
+          { label: "Calendar Link", key: "cal", placeholder: "e.g. calendly.com/yourlink" },
+        ],
+        prompt: (d) => `Build a lead qualification chatbot for ${d.product||"our product"} targeting ${d.icp||"business professionals"}. Create the full conversation: greeting → 5 qualification questions (BANT framework) → lead scoring logic → high-quality lead path (book demo at ${d.cal||"your calendar"}) → lower-intent lead path (resource offer + nurture). Include all message scripts and branching logic.`
+      },
+      {
+        title: "FAQ Knowledge Base Bot", icon: "📚",
+        desc: "Instant, accurate answers from your documentation 24/7",
+        fields: [
+          { label: "Business Type", key: "biz", placeholder: "e.g. Online Learning Platform" },
+          { label: "FAQ Topics", key: "topics", placeholder: "e.g. pricing, courses, refunds" },
+          { label: "Bot Tone", key: "tone", placeholder: "e.g. Friendly, Professional" },
+        ],
+        prompt: (d) => `Create a comprehensive FAQ chatbot for a ${d.biz||"business"} in a ${d.tone||"friendly"} tone. Build 20 Q&A pairs covering ${d.topics||"common questions"}. Include: topic category menu, follow-up suggestion logic after each answer, "didn't find answer" fallback with human handoff, satisfaction prompt, and re-engagement message. Format each Q&A ready to import into any chatbot platform.`
+      },
+      {
+        title: "Appointment Booking Bot", icon: "📅",
+        desc: "Automate scheduling, confirmations, and reminders seamlessly",
+        fields: [
+          { label: "Business Name", key: "biz", placeholder: "e.g. Smile Dental" },
+          { label: "Services Offered", key: "services", placeholder: "e.g. Cleaning, Whitening" },
+          { label: "Working Hours", key: "hours", placeholder: "e.g. Mon-Sat 9am-6pm" },
+        ],
+        prompt: (d) => `Design an appointment booking chatbot for ${d.biz||"our clinic"} offering ${d.services||"our services"}. Operating hours: ${d.hours||"9am-6pm"}. Build the complete flow: service selection → date/time picker dialogue → patient details collection → confirmation message with summary → automated reminder sequence (24hr + 1hr before appointment) → reschedule and cancel options. Write all messages.`
+      }
+    ]
+  },
+  {
+    id: "saas", icon: "📊", name: "Micro-SaaS Generator",
+    color: "#A855F7", tags: ["SAAS", "MVP"],
+    templates: [
+      {
+        title: "AI Writing Tool Blueprint", icon: "✍️",
+        desc: "Full SaaS blueprint for an AI-powered writing platform",
+        fields: [
+          { label: "Tool Name", key: "name", placeholder: "e.g. WriteAI" },
+          { label: "Writing Niche", key: "niche", placeholder: "e.g. Marketing copy" },
+          { label: "Target Users", key: "users", placeholder: "e.g. Content marketers" },
+        ],
+        prompt: (d) => `Generate a complete Micro-SaaS product blueprint for "${d.name||"our tool"}", an AI writing assistant for ${d.niche||"general writing"} targeting ${d.users||"professionals"}. Include: problem statement, unique value proposition, core features (MVP list vs V2 roadmap), recommended tech stack, monetization model with pricing tiers, go-to-market strategy, and 90-day launch roadmap with milestones. Be specific and actionable.`
+      },
+      {
+        title: "Invoice & Billing SaaS", icon: "💰",
+        desc: "Blueprint for a simple invoicing tool for freelancers & SMBs",
+        fields: [
+          { label: "Product Name", key: "name", placeholder: "e.g. BillEasy" },
+          { label: "Target Market", key: "market", placeholder: "e.g. Indian freelancers" },
+          { label: "Differentiator", key: "diff", placeholder: "e.g. WhatsApp invoice sending" },
+        ],
+        prompt: (d) => `Create a full Micro-SaaS blueprint for "${d.name||"InvoiceApp"}", an invoicing tool for ${d.market||"small businesses"} with the unique differentiator: ${d.diff||"simplicity"}. Include: 2 user personas, core MVP feature list, tech stack recommendation (frontend/backend/DB/payments), pricing model, 3-competitor analysis, top distribution channels, and Year 1 revenue projection with assumptions.`
+      },
+      {
+        title: "SEO Audit SaaS Tool", icon: "🔍",
+        desc: "SaaS that scans websites and generates actionable SEO reports",
+        fields: [
+          { label: "Tool Name", key: "name", placeholder: "e.g. RankScan" },
+          { label: "Primary User", key: "user", placeholder: "e.g. Digital agencies" },
+          { label: "Key Feature", key: "feature", placeholder: "e.g. Competitor gap analysis" },
+        ],
+        prompt: (d) => `Generate a Micro-SaaS product blueprint for "${d.name||"SEOtool"}", an SEO audit tool for ${d.user||"marketers"} with a standout feature of ${d.feature||"comprehensive audits"}. Include: core audit modules list, report generation architecture, API integrations needed, white-label options, freemium pricing tiers, sales funnel design, and technical architecture overview. Make it actionable.`
+      },
+      {
+        title: "Social Media Scheduler", icon: "📱",
+        desc: "Multi-platform content scheduling SaaS full blueprint",
+        fields: [
+          { label: "Tool Name", key: "name", placeholder: "e.g. PostWave" },
+          { label: "Platforms", key: "platforms", placeholder: "e.g. Instagram, LinkedIn, X" },
+          { label: "Unique Feature", key: "feature", placeholder: "e.g. AI caption generator" },
+        ],
+        prompt: (d) => `Build a complete Micro-SaaS blueprint for "${d.name||"Scheduler"}", a social media scheduler for ${d.platforms||"all platforms"} with the unique feature: ${d.feature||"AI content generation"}. Include: feature specification list, API integrations, content calendar architecture, team collaboration features, 3-tier pricing vs Buffer/Hootsuite, growth strategy, and 6-month development timeline with sprints.`
+      }
+    ]
+  },
+  {
+    id: "email", icon: "📧", name: "AI Email & Outreach",
+    color: "#E74C3C", tags: ["EMAILS", "LEAD GEN"],
+    templates: [
+      {
+        title: "B2B Cold Outreach Sequence", icon: "💼",
+        desc: "5-email sequence to land enterprise clients and book meetings",
+        fields: [
+          { label: "Your Company", key: "company", placeholder: "e.g. DevOps Agency" },
+          { label: "Target Companies", key: "target", placeholder: "e.g. Mid-size SaaS firms" },
+          { label: "Value Offer", key: "offer", placeholder: "e.g. Reduce infra costs 40%" },
+        ],
+        prompt: (d) => `Write a 5-email B2B cold outreach sequence from ${d.company||"our company"} targeting ${d.target||"B2B companies"} with the value: ${d.offer||"measurable results"}. Email 1 (Day 0): Pattern interrupt cold intro. Email 2 (Day 3): Value-add follow-up. Email 3 (Day 7): Case study email. Email 4 (Day 12): Direct ask with social proof. Email 5 (Day 18): Breakup email. Write complete subject lines + body for each, under 150 words each.`
+      },
+      {
+        title: "Trial-to-Paid Email Flow", icon: "🔄",
+        desc: "Convert free trial users into paying customers with 7 emails",
+        fields: [
+          { label: "Product Name", key: "product", placeholder: "e.g. DataSync Pro" },
+          { label: "Trial Duration", key: "trial", placeholder: "e.g. 14 days" },
+          { label: "Key Feature", key: "feature", placeholder: "e.g. Automated reporting" },
+        ],
+        prompt: (d) => `Create a complete trial-to-paid email sequence for ${d.product||"our SaaS"} with a ${d.trial||"14-day"} trial. Write 7 emails: Day 0 (Welcome + quick start), Day 1 (Key activation step), Day 3 (Feature spotlight: ${d.feature||"core feature"}), Day 7 (Success story), Day 10 (Urgency nudge with testimonial), Day 13 (Last chance + discount offer), Day 14 (Post-trial win-back). Include subject lines and full email copy for each.`
+      },
+      {
+        title: "Investor Pitch Emails", icon: "💡",
+        desc: "Cold emails that get responses from VCs and angel investors",
+        fields: [
+          { label: "Startup Name", key: "startup", placeholder: "e.g. FarmTech AI" },
+          { label: "Sector", key: "sector", placeholder: "e.g. AgriTech" },
+          { label: "Current Traction", key: "traction", placeholder: "e.g. ₹2L MRR, 50 clients" },
+        ],
+        prompt: (d) => `Write 3 variations of investor cold emails for ${d.startup||"our startup"}, a ${d.sector||"tech"} company with traction: ${d.traction||"early growth"}. Variation 1: Data-led approach. Variation 2: Story/vision approach. Variation 3: Problem urgency approach. Each under 150 words with a compelling subject line, specific ask, and personal feel. Include a follow-up email for each variation as well.`
+      },
+      {
+        title: "Partnership Outreach", icon: "🤝",
+        desc: "Email sequence to land strategic partnerships and integrations",
+        fields: [
+          { label: "Your Business", key: "biz", placeholder: "e.g. Email Marketing Tool" },
+          { label: "Partner Type", key: "partner", placeholder: "e.g. CRM platforms" },
+          { label: "Partnership Benefit", key: "benefit", placeholder: "e.g. Joint user growth" },
+        ],
+        prompt: (d) => `Write a 3-email partnership outreach sequence from ${d.biz||"our company"} to ${d.partner||"potential partners"} with the mutual benefit: ${d.benefit||"growth"}. Email 1: Initial partnership proposal (personalized, value-first). Email 2: Follow-up with a specific integration idea and user data. Email 3: Final attempt with a concrete one-page proposal outline. Include subject lines, full body, and what the partnership one-pager should include.`
+      }
+    ]
+  },
+  {
+    id: "cloud", icon: "☁️", name: "AI Cloud Consulting",
+    color: "#3498DB", tags: ["CLOUD", "DEVOPS"],
+    templates: [
+      {
+        title: "Cloud Migration Plan", icon: "🚀",
+        desc: "Phased migration plan from on-premises to cloud infrastructure",
+        fields: [
+          { label: "Company Name", key: "company", placeholder: "e.g. RetailCorp" },
+          { label: "Current Stack", key: "stack", placeholder: "e.g. On-prem Windows Server" },
+          { label: "Target Cloud", key: "cloud", placeholder: "e.g. AWS / Azure / GCP" },
+        ],
+        prompt: (d) => `Create a detailed cloud migration plan for ${d.company||"our company"} moving from ${d.stack||"on-premise infrastructure"} to ${d.cloud||"cloud"}. Include: pre-migration assessment checklist (10 items), application dependency mapping approach, migration strategy using 6R framework, 3-phase migration timeline, risk mitigation plan per phase, cost estimation framework, rollback strategy, and post-migration validation checklist. Be technical and specific.`
+      },
+      {
+        title: "Cloud Cost Optimization", icon: "💰",
+        desc: "Identify and eliminate cloud waste to cut your cloud bill",
+        fields: [
+          { label: "Cloud Provider", key: "provider", placeholder: "e.g. AWS" },
+          { label: "Monthly Spend", key: "spend", placeholder: "e.g. $10,000/month" },
+          { label: "Services Used", key: "services", placeholder: "e.g. EC2, RDS, S3" },
+        ],
+        prompt: (d) => `Generate a comprehensive cloud cost optimization report for a ${d.provider||"AWS"} environment spending ${d.spend||"significant amount"}/month on ${d.services||"various services"}. Include: top 10 optimization recommendations with estimated savings %, right-sizing strategy, reserved instance recommendations, auto-scaling configuration guide, unused resource cleanup checklist, FinOps governance framework, and a 30-60-90 day savings action plan specific to ${d.provider||"the cloud provider"}.`
+      },
+      {
+        title: "CI/CD Pipeline Design", icon: "⚙️",
+        desc: "End-to-end DevOps pipeline from code commit to production",
+        fields: [
+          { label: "App Type", key: "app", placeholder: "e.g. Node.js microservices" },
+          { label: "Cloud Platform", key: "cloud", placeholder: "e.g. AWS EKS" },
+          { label: "Team Size", key: "team", placeholder: "e.g. 5 developers" },
+        ],
+        prompt: (d) => `Design a complete CI/CD pipeline for a ${d.app||"web application"} deployed on ${d.cloud||"cloud platform"} for a ${d.team||"small team"}. Include: Git branching strategy, CI pipeline stages (build/test/security scan/artifact), CD pipeline stages (staging/smoke test/production), rollback mechanism, monitoring integration, secrets management approach, and IaC structure. Provide tool recommendations and key configuration snippets for each stage.`
+      },
+      {
+        title: "Cloud Security Audit", icon: "🔒",
+        desc: "Comprehensive security hardening checklist for cloud infrastructure",
+        fields: [
+          { label: "Cloud Provider", key: "provider", placeholder: "e.g. Azure" },
+          { label: "Industry", key: "industry", placeholder: "e.g. Healthcare / Finance" },
+          { label: "Compliance Target", key: "compliance", placeholder: "e.g. ISO 27001, SOC2" },
+        ],
+        prompt: (d) => `Generate a comprehensive cloud security audit checklist for ${d.provider||"cloud"} in the ${d.industry||"enterprise"} industry targeting ${d.compliance||"compliance"} standards. Cover: IAM & access management (10 checks), network security (8 checks), data encryption at rest & in transit (6 checks), logging & monitoring (8 checks), incident response readiness (5 checks), and ${d.compliance||"compliance"}-specific controls. Each check: what to verify, why it matters, and exact remediation steps.`
+      }
+    ]
+  },
+  {
+    id: "content", icon: "✏️", name: "AI Content Studio",
+    color: "#27AE60", tags: ["CONTENT", "SEO"],
+    templates: [
+      {
+        title: "SEO Blog Post", icon: "📝",
+        desc: "Rank-ready long-form content with full SEO optimization built in",
+        fields: [
+          { label: "Keyword / Topic", key: "topic", placeholder: "e.g. best CRM for startups" },
+          { label: "Target Audience", key: "audience", placeholder: "e.g. Startup founders" },
+          { label: "Word Count", key: "words", placeholder: "e.g. 1500 words" },
+        ],
+        prompt: (d) => `Write a complete SEO-optimized blog post on "${d.topic||"our topic"}" for ${d.audience||"our readers"}. Target: ${d.words||"1500 words"}. Include: SEO title tag (under 60 chars), meta description (under 160 chars), H1 headline, engaging introduction with hook, 5 H2 sections with subheadings, FAQ section (5 Q&As targeting featured snippets), conclusion with CTA, and 5 internal linking suggestions. Make it comprehensive, authoritative, and genuinely useful.`
+      },
+      {
+        title: "LinkedIn Content Pack", icon: "💼",
+        desc: "30-day LinkedIn calendar to build authority and generate leads",
+        fields: [
+          { label: "Your Niche", key: "niche", placeholder: "e.g. Cloud Architecture" },
+          { label: "Target Audience", key: "audience", placeholder: "e.g. CTOs, Founders" },
+          { label: "Content Goal", key: "goal", placeholder: "e.g. Get consulting clients" },
+        ],
+        prompt: (d) => `Create a 30-day LinkedIn content calendar for a ${d.niche||"professional"} expert targeting ${d.audience||"business leaders"} to ${d.goal||"build authority"}. Map 30 days using 10 post types (story, insight, tip, poll idea, carousel outline, case study, opinion, list, myth-bust, question). Write FULL copy for the first 10 posts. Include posting time recommendations, hashtag strategy (10 hashtags), and engagement response tips.`
+      },
+      {
+        title: "YouTube Video Script", icon: "🎬",
+        desc: "High-retention scripts structured for views and subscriber growth",
+        fields: [
+          { label: "Video Topic", key: "topic", placeholder: "e.g. How to migrate to AWS" },
+          { label: "Channel Niche", key: "niche", placeholder: "e.g. Tech tutorials" },
+          { label: "Target Length", key: "length", placeholder: "e.g. 10 minutes" },
+        ],
+        prompt: (d) => `Write a complete YouTube video script for "${d.topic||"our topic"}" for a ${d.niche||"educational"} channel targeting ${d.length||"8-10 minute"} runtime. Include: attention hook (first 30 seconds), pattern interrupt at 2 minutes, main content (5 clear sections with transitions), B-roll suggestions, mid-roll ad break placement, CTA section, 5 title variations for A/B testing, thumbnail concept (3 options), and video description with timestamps and 15 relevant tags.`
+      },
+      {
+        title: "Product Description Pack", icon: "🛍️",
+        desc: "Conversion-optimized copy for marketplace and e-commerce listings",
+        fields: [
+          { label: "Product Name", key: "product", placeholder: "e.g. Organic Turmeric Latte" },
+          { label: "Key Benefits", key: "benefits", placeholder: "e.g. Anti-inflammatory, sleep" },
+          { label: "Marketplace", key: "marketplace", placeholder: "e.g. Amazon, Meesho, Shopify" },
+        ],
+        prompt: (d) => `Create a complete product description pack for "${d.product||"our product"}" with benefits: ${d.benefits||"key advantages"} for ${d.marketplace||"online marketplace"}. Include: short description (50 words), long description (200 words), 5 benefit-focused bullet points, SEO-optimized title, backend keyword list (20 keywords), A+ content section outline, and 3 ad copy variants for Google, Meta, and ${d.marketplace||"the marketplace"}. Optimize every element for conversion.`
+      }
+    ]
+  }
+];
+
+/* ── API KEY MODAL ───────────────────────────────────────────────────────────── */
+function ApiKeyModal({ onSave }) {
+  const [key, setKey] = React.useState('');
+  const [err, setErr] = React.useState('');
+  const save = () => {
+    if (!key.startsWith('sk-ant-')) {
+      setErr('Key must start with sk-ant-  —  get yours at console.anthropic.com');
+      return;
+    }
+    localStorage.setItem('mh_anthropic_key', key.trim());
+    onSave(key.trim());
+  };
+  return (
+    <div className="key-overlay">
+      <div className="key-modal">
+        <h2>🔑 CONNECT AI</h2>
+        <p>
+          Enter your Anthropic API key to power all 7 template tools with live Claude AI generation.<br/>
+          Your key is stored only in this browser — never sent to any third party.
+        </p>
+        <input
+          className="key-input"
+          type="password"
+          value={key}
+          onChange={e => { setKey(e.target.value); setErr(''); }}
+          placeholder="sk-ant-api03-..."
+          onKeyDown={e => e.key === 'Enter' && save()}
+          autoFocus
+        />
+        {err && <p style={{color:'#e8373a', fontSize:'0.75rem', marginTop:8}}>{err}</p>}
+        <button className="key-btn" onClick={save}>⚡ ACTIVATE TEMPLATES</button>
+        <p className="key-note">
+          Get your free key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
+          &nbsp;·&nbsp; Requests routed via local server proxy &nbsp;·&nbsp; Never stored externally
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/* ── MAIN APP ────────────────────────────────────────────────────────────────── */
+function MaxHopeTemplates() {
+  const savedKey = localStorage.getItem('mh_anthropic_key') || '';
+  const [apiKey, setApiKey]         = React.useState(savedKey);
+  const [showKeyModal, setShowKeyModal] = React.useState(!savedKey);
+  const [activeTool, setActiveTool]     = React.useState(0);
+  const [activeTemplate, setActiveTemplate] = React.useState(null);
+  const [fields, setFields]         = React.useState({});
+  const [loading, setLoading]       = React.useState(false);
+  const [output, setOutput]         = React.useState('');
+  const [copied, setCopied]         = React.useState(false);
+
+  const tool = TOOLS[activeTool];
+
+  const handleToolSwitch = (idx) => {
+    setActiveTool(idx);
+    setActiveTemplate(null);
+    setOutput('');
+    setFields({});
+  };
+
+  const handleSelectTemplate = (idx) => {
+    if (activeTemplate === idx) { setActiveTemplate(null); setOutput(''); setFields({}); }
+    else { setActiveTemplate(idx); setOutput(''); setFields({}); }
+  };
+
+  const handleGenerate = async (tmpl) => {
+    setLoading(true);
+    setOutput('');
+    try {
+      // Detect if running on localhost (with server.js) or GitHub Pages
+      const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      const endpoint = isLocal ? '/api/generate' : 'https://api.anthropic.com/v1/messages';
+
+      const resp = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          ...(isLocal ? {} : { 'anthropic-version': '2023-06-01' }),
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1800,
+          messages: [{ role: 'user', content: tmpl.prompt(fields) }],
+        }),
+      });
+
+      if (resp.status === 401) {
+        setOutput('❌  Invalid API key. Click the key icon in the nav bar to update it.');
+        setLoading(false);
+        return;
+      }
+
+      const data = await resp.json();
+      if (data.error) {
+        setOutput(`⚠️  API error: ${data.error.message || JSON.stringify(data.error)}`);
+      } else {
+        const text = (data.content || []).map(b => b.text || '').join('');
+        setOutput(text || 'No response received.');
+      }
+    } catch (e) {
+      setOutput('⚠️  Could not reach the API. If you are on GitHub Pages, please run the local server (node server.js) and open http://localhost:3000/templates.html');
+    }
+    setLoading(false);
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const activeTmpl = activeTemplate !== null ? tool.templates[activeTemplate] : null;
+
+  const S = {
+    page: { minHeight:'100vh', position:'relative' },
+    // Farm BG
+    farmBg: {
+      position:'fixed', inset:0, zIndex:0,
+      backgroundImage:"url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1920&q=85')",
+      backgroundSize:'cover', backgroundPosition:'center', backgroundAttachment:'fixed',
+    },
+    overlay: {
+      position:'fixed', inset:0, zIndex:1,
+      background:'linear-gradient(180deg,rgba(0,0,0,0.56)0%,rgba(10,20,8,0.50)40%,rgba(0,0,0,0.60)100%)',
+    },
+    content: { position:'relative', zIndex:2, maxWidth:880, margin:'0 auto', padding:'0 16px 60px' },
+    header: { textAlign:'center', padding:'28px 0 20px' },
+    headerCard: {
+      display:'inline-block', background:'rgba(0,0,0,0.58)', backdropFilter:'blur(20px)',
+      borderRadius:20, padding:'12px 32px', border:'1px solid rgba(255,255,255,0.18)', marginBottom:10,
+    },
+    h1: { margin:0, color:'#fff', fontSize:'1.7rem', fontFamily:"'Bebas Neue',sans-serif", letterSpacing:3 },
+    sub: { color:'rgba(255,255,255,0.72)', margin:0, fontSize:'0.84rem', letterSpacing:1 },
+    tabs: { display:'flex', overflowX:'auto', gap:8, marginBottom:20, paddingBottom:4, scrollbarWidth:'none', WebkitOverflowScrolling:'touch' },
+    toolHeader: {
+      background:'rgba(0,0,0,0.58)', backdropFilter:'blur(18px)',
+      borderRadius:16, padding:'14px 18px', marginBottom:16,
+      display:'flex', alignItems:'center', gap:14,
+    },
+    grid: { display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:14 },
+    panel: {
+      background:'rgba(5,10,5,0.78)', backdropFilter:'blur(20px)',
+      borderRadius:18, padding:22, animation:'fadeIn 0.25s ease',
+    },
+    footer: { textAlign:'center', marginTop:32, color:'rgba(255,255,255,0.28)', fontSize:'0.7rem', letterSpacing:'1px' },
+  };
+
+  return (
+    <div style={S.page}>
+      {showKeyModal && <ApiKeyModal onSave={(k) => { setApiKey(k); setShowKeyModal(false); }} />}
+
+      <div style={S.farmBg} />
+      <div style={S.overlay} />
+
+      {/* NAV */}
+      <nav className="page-nav">
+        <a href="index.html" className="page-nav-logo">Maxhope<span>.AI</span></a>
+        <div className="page-nav-right">
+          <a href="index.html" className="nav-back">← Back to Home</a>
+          <button className="nav-key-btn" onClick={() => setShowKeyModal(true)}>
+            <span className="nav-key-status" style={{background: apiKey ? '#50C878' : '#e8373a'}} />
+            {apiKey ? 'AI CONNECTED' : 'ADD API KEY'}
+          </button>
+        </div>
+      </nav>
+
+      <div style={S.content}>
+        {/* HEADER */}
+        <div style={S.header}>
+          <div style={S.headerCard}>
+            <h1 style={S.h1}>MAXHOPE<span style={{color:'#e8373a'}}>.AI</span> &nbsp;TEMPLATE HUB</h1>
+          </div>
+          <p style={S.sub}>🌾 7 AI tools · 28 templates · Fill details → Generate with Claude instantly</p>
+        </div>
+
+        {/* TOOL TABS */}
+        <div style={S.tabs}>
+          {TOOLS.map((t, i) => (
+            <button key={t.id} onClick={() => handleToolSwitch(i)} style={{
+              flexShrink:0, cursor:'pointer',
+              padding:'7px 14px', borderRadius:30,
+              border: activeTool===i ? `2px solid ${t.color}` : '1.5px solid rgba(255,255,255,0.22)',
+              background: activeTool===i ? 'rgba(0,0,0,0.7)' : 'rgba(0,0,0,0.38)',
+              backdropFilter:'blur(14px)',
+              color: activeTool===i ? '#fff' : 'rgba(255,255,255,0.6)',
+              fontFamily:"'Syne',sans-serif", fontSize:'0.68rem', fontWeight:700, letterSpacing:'0.8px',
+              transition:'all 0.2s', whiteSpace:'nowrap',
+              boxShadow: activeTool===i ? `0 0 14px ${t.color}55` : 'none', outline:'none',
+            }}>
+              <span style={{color: activeTool===i ? t.color : 'inherit'}}>{t.icon}</span>{' '}
+              {t.name.replace('AI ','').replace('Micro-SaaS','SaaS')}
+            </button>
+          ))}
+        </div>
+
+        {/* ACTIVE TOOL HEADER */}
+        <div style={{...S.toolHeader, borderLeft:`4px solid ${tool.color}`, border:`1px solid ${tool.color}33`}}>
+          <span style={{fontSize:'2rem'}}>{tool.icon}</span>
+          <div>
+            <h2 style={{color:'#fff', margin:'0 0 5px', fontSize:'1.05rem', fontFamily:"'Bebas Neue',sans-serif", letterSpacing:1}}>{tool.name}</h2>
+            <div style={{display:'flex', gap:6, flexWrap:'wrap'}}>
+              {tool.tags.map(tag => (
+                <span key={tag} style={{
+                  background:`${tool.color}20`, border:`1px solid ${tool.color}50`,
+                  color:tool.color, borderRadius:10, padding:'2px 9px',
+                  fontFamily:"'Syne',monospace", fontSize:'0.62rem', fontWeight:800, letterSpacing:'1.2px',
+                }}>{tag}</span>
+              ))}
+            </div>
+          </div>
+          <div style={{marginLeft:'auto', color:'rgba(255,255,255,0.35)', fontFamily:"'Syne',sans-serif", fontSize:'0.7rem'}}>
+            {tool.templates.length} templates
+          </div>
+        </div>
+
+        {/* TEMPLATE CARDS */}
+        <div style={S.grid}>
+          {tool.templates.map((tmpl, idx) => (
+            <div key={idx} onClick={() => handleSelectTemplate(idx)} style={{
+              background: activeTemplate===idx ? 'rgba(10,10,10,0.75)' : 'rgba(10,10,10,0.52)',
+              backdropFilter:'blur(16px)', borderRadius:14, padding:16, cursor:'pointer',
+              border: activeTemplate===idx ? `2px solid ${tool.color}` : '1px solid rgba(255,255,255,0.13)',
+              transition:'all 0.22s',
+              boxShadow: activeTemplate===idx ? `0 4px 22px ${tool.color}33` : '0 2px 8px rgba(0,0,0,0.3)',
+            }}>
+              <div style={{fontSize:'1.6rem', marginBottom:8}}>{tmpl.icon}</div>
+              <h3 style={{color:'#fff', margin:'0 0 5px', fontFamily:"'DM Sans',sans-serif", fontSize:'0.9rem', fontWeight:700, lineHeight:1.3}}>{tmpl.title}</h3>
+              <p style={{color:'rgba(255,255,255,0.55)', margin:'0 0 10px', fontSize:'0.76rem', lineHeight:1.45}}>{tmpl.desc}</p>
+              <div style={{color: activeTemplate===idx ? tool.color : 'rgba(255,255,255,0.4)', fontFamily:"'Syne',sans-serif", fontSize:'0.68rem', fontWeight:700, letterSpacing:'0.5px'}}>
+                {activeTemplate===idx ? '▲ CLOSE' : 'USE TEMPLATE →'}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* EXPANDED PANEL */}
+        {activeTmpl && (
+          <div style={{...S.panel, border:`1px solid ${tool.color}44`, boxShadow:`0 8px 32px ${tool.color}22`}}>
+            <div style={{display:'flex', alignItems:'center', gap:10, marginBottom:18}}>
+              <span style={{fontSize:'1.4rem'}}>{activeTmpl.icon}</span>
+              <div>
+                <h3 style={{color:'#fff', margin:0, fontFamily:"'Bebas Neue',sans-serif", fontSize:'1.1rem', letterSpacing:1}}>{activeTmpl.title}</h3>
+                <p style={{color:'rgba(255,255,255,0.48)', margin:0, fontSize:'0.76rem'}}>{activeTmpl.desc}</p>
+              </div>
+            </div>
+
+            {/* Fields */}
+            <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginBottom:16}}>
+              {activeTmpl.fields.map(f => (
+                <div key={f.key}>
+                  <label style={{
+                    display:'block', marginBottom:5, color:'rgba(255,255,255,0.6)',
+                    fontFamily:"'Syne',sans-serif", fontSize:'0.66rem', fontWeight:700, letterSpacing:'1px',
+                  }}>{f.label.toUpperCase()}</label>
+                  <input
+                    value={fields[f.key] || ''}
+                    onChange={e => setFields(p => ({...p, [f.key]: e.target.value}))}
+                    placeholder={f.placeholder}
+                    style={{
+                      width:'100%', boxSizing:'border-box',
+                      background:'rgba(255,255,255,0.08)', border:`1px solid rgba(255,255,255,0.18)`,
+                      borderRadius:9, padding:'9px 11px', color:'#fff',
+                      fontFamily:"'DM Sans',sans-serif", fontSize:'0.83rem', outline:'none',
+                      transition:'border-color 0.2s',
+                    }}
+                    onFocus={e => e.target.style.borderColor = tool.color}
+                    onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.18)'}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Generate button */}
+            <button
+              onClick={(e) => { e.stopPropagation(); if (!apiKey) { setShowKeyModal(true); return; } handleGenerate(activeTmpl); }}
+              disabled={loading}
+              style={{
+                background: loading ? 'rgba(80,80,80,0.5)' : tool.color,
+                color:'#fff', border:'none', borderRadius:11,
+                padding:'11px 28px', fontFamily:"'Syne',sans-serif", fontSize:'0.82rem', fontWeight:800,
+                cursor: loading ? 'not-allowed' : 'pointer', letterSpacing:'1px',
+                transition:'all 0.2s', display:'flex', alignItems:'center', gap:8,
+                boxShadow: loading ? 'none' : `0 4px 18px ${tool.color}55`,
+              }}
+            >
+              {loading
+                ? <><span style={{display:'inline-block', animation:'spin 1s linear infinite'}}>⏳</span> GENERATING WITH CLAUDE AI...</>
+                : <>⚡ GENERATE WITH CLAUDE AI</>
+              }
+            </button>
+
+            {/* Output */}
+            {output && (
+              <div style={{marginTop:18, animation:'fadeIn 0.3s ease'}}>
+                <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10}}>
+                  <span style={{color:tool.color, fontFamily:"'Syne',sans-serif", fontSize:'0.7rem', fontWeight:800, letterSpacing:'1.2px'}}>
+                    ✅ AI-GENERATED OUTPUT
+                  </span>
+                  <button onClick={handleCopy} style={{
+                    background: copied ? `${tool.color}33` : 'rgba(255,255,255,0.08)',
+                    border:`1px solid ${copied ? tool.color : 'rgba(255,255,255,0.18)'}`,
+                    borderRadius:7, padding:'4px 12px', color:'#fff',
+                    fontFamily:"'Syne',sans-serif", fontSize:'0.68rem', cursor:'pointer', fontWeight:600,
+                    transition:'all 0.2s',
+                  }}>
+                    {copied ? '✓ COPIED!' : '📋 Copy All'}
+                  </button>
+                </div>
+                <div style={{
+                  background:'rgba(255,255,255,0.05)', borderRadius:12, padding:16,
+                  border:'1px solid rgba(255,255,255,0.1)', maxHeight:440, overflowY:'auto',
+                }}>
+                  <pre style={{
+                    color:'rgba(255,255,255,0.88)', fontFamily:"'DM Sans',sans-serif",
+                    fontSize:'0.81rem', lineHeight:1.7, whiteSpace:'pre-wrap', wordBreak:'break-word', margin:0,
+                  }}>{output}</pre>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div style={S.footer}>🌾 MAXHOPE.AI — Templates powered by Claude AI &nbsp;·&nbsp; Run locally with <code style={{color:'rgba(232,55,58,0.7)'}}>node server.js</code></div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('app')).render(<MaxHopeTemplates />);
+</script>
+
+<script src="js/hope-chat.js"></script>
+</body>
+</html>

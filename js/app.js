@@ -176,6 +176,7 @@ function renderPublicNav() {
         <div class="nav-links" id="nav-links">
           <a href="${base}index.html#features">Features</a>
           <a href="${base}index.html#tools">Tools</a>
+          <a href="${base}templates.html">Templates</a>
           <a href="${base}pricing.html">Pricing</a>
           <a href="${base}index.html#testimonials">Testimonials</a>
         </div>

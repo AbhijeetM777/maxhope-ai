@@ -3,63 +3,262 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Maxhope.AI - Build, Automate & Scale with AI</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<title>Maxhope.AI - Automate Your Business in Minutes</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
+<style>
+/* ---- Homepage-specific styles ---- */
+
+/* Ticker */
+.hp-ticker{background:var(--accent);overflow:hidden;padding:8px 0;white-space:nowrap}
+.hp-ticker-track{display:inline-flex;gap:48px;animation:hp-ticker-scroll 25s linear infinite}
+.hp-ticker-item{font-family:var(--font-heading);font-size:0.85rem;letter-spacing:0.15em;text-transform:uppercase;color:#fff;display:flex;align-items:center;gap:16px}
+.hp-ticker-item::after{content:'\2605';font-size:0.5rem}
+@keyframes hp-ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* Trust bar */
+.trust-bar{padding:32px 0;border-bottom:1px solid var(--border)}
+.trust-logos{display:flex;align-items:center;justify-content:center;gap:40px;flex-wrap:wrap}
+.trust-logo{display:flex;flex-direction:column;align-items:center;gap:4px;opacity:0.7;transition:opacity 0.3s}
+.trust-logo:hover{opacity:1}
+.trust-logo-icon{font-size:28px}
+.trust-logo-name{font-family:var(--font-mono);font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted)}
+.trust-count{text-align:center;margin-bottom:20px}
+.trust-count span{font-family:var(--font-heading);font-size:2rem;color:var(--accent)}
+.trust-count p{font-family:var(--font-body);font-size:0.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em}
+
+/* Live demo block */
+.demo-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;max-width:900px;margin:60px auto 0;position:relative}
+.demo-topbar{display:flex;align-items:center;gap:8px;padding:12px 18px;background:var(--surface2);border-bottom:1px solid var(--border)}
+.demo-dot{width:10px;height:10px;border-radius:50%}
+.demo-url{font-family:var(--font-mono);font-size:0.65rem;color:var(--dim);margin-left:12px;letter-spacing:0.05em;text-transform:uppercase}
+.demo-body{padding:24px}
+.demo-flow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center}
+.demo-node{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 20px;font-family:var(--font-mono);font-size:0.7rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text);display:flex;align-items:center;gap:8px;transition:all 0.3s}
+.demo-node:hover{border-color:var(--accent);transform:translateY(-2px)}
+.demo-node-icon{font-size:18px}
+.demo-arrow{color:var(--accent);font-size:18px;font-weight:700}
+.demo-output{margin-top:20px;background:rgba(76,175,125,0.08);border:1px solid rgba(76,175,125,0.2);border-radius:var(--radius-md);padding:16px 20px;text-align:center}
+.demo-output-label{font-family:var(--font-mono);font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--green);margin-bottom:4px}
+.demo-output-text{font-family:var(--font-body);font-size:0.85rem;color:var(--text-secondary)}
+
+/* Integrations */
+.integrations-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;max-width:700px;margin:0 auto}
+.integration-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-md);padding:20px 16px;text-align:center;transition:all 0.25s;cursor:default}
+.integration-card:hover{border-color:var(--accent);transform:translateY(-4px);box-shadow:var(--shadow-card)}
+.integration-icon{font-size:32px;margin-bottom:8px}
+.integration-name{font-family:var(--font-mono);font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text)}
+.integration-desc{font-family:var(--font-body);font-size:0.6rem;color:var(--dim);margin-top:4px}
+.integration-more{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:24px}
+.integration-more span{font-family:var(--font-mono);font-size:0.7rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase}
+
+/* India badge */
+.india-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(76,175,125,0.1);border:1px solid rgba(76,175,125,0.25);border-radius:var(--radius-full);padding:4px 14px;font-family:var(--font-mono);font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--green)}
+
+/* Stats row */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin:48px 0}
+.stat-item{text-align:center}
+.stat-num{font-family:var(--font-heading);font-size:2.8rem;color:var(--text);line-height:1}
+.stat-label{font-family:var(--font-mono);font-size:0.6rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+
+/* Testimonial featured */
+.testimonial-featured{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-xl);padding:40px;display:grid;grid-template-columns:1fr 2fr;gap:32px;align-items:center;margin-bottom:24px}
+.testimonial-metric{text-align:center}
+.testimonial-metric-num{font-family:var(--font-heading);font-size:4rem;color:var(--accent);line-height:1}
+.testimonial-metric-label{font-family:var(--font-mono);font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.testimonial-quote{font-family:'Playfair Display',serif;font-size:1.3rem;font-style:italic;font-weight:700;color:var(--text);line-height:1.5;text-transform:none;letter-spacing:0}
+.testimonial-quote-author{display:flex;align-items:center;gap:12px;margin-top:16px}
+.testimonial-quote-name{font-family:var(--font-mono);font-size:0.75rem;font-weight:600;letter-spacing:0.08em;color:var(--text)}
+.testimonial-quote-role{font-family:var(--font-body);font-size:0.75rem;color:var(--muted)}
+
+/* Security strip */
+.security-strip{display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap;padding:24px 0}
+.security-item{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:0.65rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted)}
+.security-item-icon{font-size:16px}
+
+/* Responsive */
+@media(max-width:768px){
+  .integrations-grid{grid-template-columns:repeat(3,1fr)}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .testimonial-featured{grid-template-columns:1fr;text-align:center}
+  .demo-flow{flex-direction:column}
+  .demo-arrow{transform:rotate(90deg)}
+}
+@media(max-width:480px){
+  .integrations-grid{grid-template-columns:repeat(2,1fr)}
+  .trust-logos{gap:20px}
+}
+</style>
 </head>
 <body>
 
 <div id="nav-container"></div>
 
+<!-- Ticker Strip -->
+<div class="hp-ticker" style="margin-top:68px;">
+  <div class="hp-ticker-track">
+    <span class="hp-ticker-item">AI-First Platform</span>
+    <span class="hp-ticker-item">Built for India</span>
+    <span class="hp-ticker-item">7 AI Tools</span>
+    <span class="hp-ticker-item">No Code Required</span>
+    <span class="hp-ticker-item">WhatsApp Integration</span>
+    <span class="hp-ticker-item">Razorpay Ready</span>
+    <span class="hp-ticker-item">INR Pricing</span>
+    <span class="hp-ticker-item">Deploy in Seconds</span>
+    <span class="hp-ticker-item">AI-First Platform</span>
+    <span class="hp-ticker-item">Built for India</span>
+    <span class="hp-ticker-item">7 AI Tools</span>
+    <span class="hp-ticker-item">No Code Required</span>
+    <span class="hp-ticker-item">WhatsApp Integration</span>
+    <span class="hp-ticker-item">Razorpay Ready</span>
+    <span class="hp-ticker-item">INR Pricing</span>
+    <span class="hp-ticker-item">Deploy in Seconds</span>
+  </div>
+</div>
+
 <!-- Hero -->
 <section class="hero">
   <div class="container">
-    <div class="tag tag-gold" style="margin-bottom:20px;">&#9889; Launching 2026 &mdash; Join 10,000+ early users</div>
-    <h1>Build, Automate &<br>Scale with <span>AI</span></h1>
-    <p>7 powerful AI tools in one platform. Build websites, chatbots, automations, email campaigns, and more &mdash; all powered by AI. No coding required.</p>
-    <div class="hero-actions">
-      <a href="signup.html" class="btn btn-primary btn-lg">Start Free Trial</a>
-      <a href="#tools" class="btn btn-secondary btn-lg">Explore Tools</a>
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+      <span class="india-badge">&#127470;&#127475; Your data stays in India</span>
+      <span class="tag tag-gold">&#9889; 50+ businesses trust Maxhope</span>
     </div>
-    <p class="hero-note">No credit card required &bull; 7-day free trial &bull; Cancel anytime</p>
+    <h1>Automate your business<br>in minutes &mdash; not <span>months</span></h1>
+    <p>Built for India, priced for India. 7 AI tools that replace your entire tech stack &mdash; websites, chatbots, automations, emails, and more. No coding. No enterprise contracts.</p>
+    <div class="hero-actions">
+      <a href="signup.html" class="btn btn-primary btn-lg">Start Free &mdash; No Card Needed</a>
+      <a href="#demo" class="btn btn-secondary btn-lg">Watch It Work &#9654;</a>
+    </div>
+    <p class="hero-note">Free forever plan &bull; INR pricing &bull; Cancel anytime</p>
 
-    <!-- Mock Dashboard Preview -->
-    <div style="margin-top:50px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;max-width:700px;margin-left:auto;margin-right:auto;">
-      <div style="display:flex;gap:6px;margin-bottom:16px;">
-        <div style="width:10px;height:10px;border-radius:50%;background:var(--red);"></div>
-        <div style="width:10px;height:10px;border-radius:50%;background:var(--gold);"></div>
-        <div style="width:10px;height:10px;border-radius:50%;background:var(--green);"></div>
+    <!-- Live Product Demo -->
+    <div class="demo-block" id="demo">
+      <div class="demo-topbar">
+        <div class="demo-dot" style="background:var(--red);"></div>
+        <div class="demo-dot" style="background:var(--gold);"></div>
+        <div class="demo-dot" style="background:var(--green);"></div>
+        <span class="demo-url">maxhope.ai / automation builder</span>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
-        <div style="background:var(--gold-dim);border-radius:8px;height:60px;"></div>
-        <div style="background:var(--green-dim);border-radius:8px;height:60px;"></div>
-        <div style="background:var(--blue-dim);border-radius:8px;height:60px;"></div>
-        <div style="background:var(--purple-dim);border-radius:8px;height:60px;"></div>
-      </div>
-      <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-top:10px;">
-        <div style="background:var(--surface2);border-radius:8px;height:100px;"></div>
-        <div style="background:var(--surface2);border-radius:8px;height:100px;"></div>
+      <div class="demo-body">
+        <p style="font-family:var(--font-mono);font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent);text-align:center;margin-bottom:16px;">Live Workflow Preview</p>
+        <div class="demo-flow">
+          <div class="demo-node"><span class="demo-node-icon">&#128172;</span> WhatsApp Message</div>
+          <span class="demo-arrow">&rarr;</span>
+          <div class="demo-node"><span class="demo-node-icon">&#129302;</span> AI Processes</div>
+          <span class="demo-arrow">&rarr;</span>
+          <div class="demo-node"><span class="demo-node-icon">&#128200;</span> Zoho CRM Update</div>
+          <span class="demo-arrow">&rarr;</span>
+          <div class="demo-node"><span class="demo-node-icon">&#128231;</span> Auto Email</div>
+        </div>
+        <div class="demo-output">
+          <div class="demo-output-label">&#9989; Workflow Active</div>
+          <div class="demo-output-text">New lead from WhatsApp &rarr; AI qualifies &rarr; Added to CRM &rarr; Follow-up sent. All in 3 seconds.</div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Social Proof -->
-<section style="padding:20px 0 40px;border-bottom:1px solid var(--border);">
-  <div class="container" style="text-align:center;">
-    <p class="text-dim" style="font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;">Trusted by businesses worldwide</p>
-    <div style="display:flex;align-items:center;justify-content:center;gap:40px;flex-wrap:wrap;opacity:0.4;">
-      <span class="mono" style="font-size:18px;font-weight:700;">ACME</span>
-      <span class="mono" style="font-size:18px;font-weight:700;">TechFlow</span>
-      <span class="mono" style="font-size:18px;font-weight:700;">ScaleUp</span>
-      <span class="mono" style="font-size:18px;font-weight:700;">CloudBase</span>
-      <span class="mono" style="font-size:18px;font-weight:700;">DataSync</span>
+<!-- Trust Bar with Real Metrics -->
+<section class="trust-bar">
+  <div class="container">
+    <div class="trust-count"><span>50+</span><p>Indian businesses already automating</p></div>
+    <div class="trust-logos">
+      <div class="trust-logo"><div class="trust-logo-icon">&#127970;</div><div class="trust-logo-name">TechFlow</div></div>
+      <div class="trust-logo"><div class="trust-logo-icon">&#128640;</div><div class="trust-logo-name">ScaleUp</div></div>
+      <div class="trust-logo"><div class="trust-logo-icon">&#9729;&#65039;</div><div class="trust-logo-name">CloudBase</div></div>
+      <div class="trust-logo"><div class="trust-logo-icon">&#128202;</div><div class="trust-logo-name">DataSync</div></div>
+      <div class="trust-logo"><div class="trust-logo-icon">&#127968;</div><div class="trust-logo-name">IndiaMart</div></div>
+    </div>
+    <div class="security-strip">
+      <div class="security-item"><span class="security-item-icon">&#128274;</span> SOC 2 Compliant</div>
+      <div class="security-item"><span class="security-item-icon">&#127470;&#127475;</span> India Data Residency</div>
+      <div class="security-item"><span class="security-item-icon">&#128737;</span> End-to-End Encrypted</div>
+      <div class="security-item"><span class="security-item-icon">&#9989;</span> GDPR Ready</div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section style="background:var(--surface);padding:48px 0;border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="stats-row">
+      <div class="stat-item"><div class="stat-num">7</div><div class="stat-label">AI Tools</div></div>
+      <div class="stat-item"><div class="stat-num">50+</div><div class="stat-label">Active Users</div></div>
+      <div class="stat-item"><div class="stat-num">3s</div><div class="stat-label">Avg Deploy Time</div></div>
+      <div class="stat-item"><div class="stat-num">80%</div><div class="stat-label">Cost Savings</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Integrations -->
+<section class="section" id="integrations">
+  <div class="container">
+    <div class="section-header animate-on-scroll">
+      <div class="tag tag-green" style="margin-bottom:12px;">Integrations</div>
+      <h2>Connects to tools <span class="text-gold">you already use</span></h2>
+      <p>Deep integrations with the platforms that power 80% of Indian business workflows.</p>
+    </div>
+    <div class="integrations-grid animate-on-scroll">
+      <div class="integration-card">
+        <div class="integration-icon">&#128172;</div>
+        <div class="integration-name">WhatsApp</div>
+        <div class="integration-desc">Business API</div>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon">&#128179;</div>
+        <div class="integration-name">Razorpay</div>
+        <div class="integration-desc">Payments</div>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon">&#128203;</div>
+        <div class="integration-name">Zoho CRM</div>
+        <div class="integration-desc">Sales Pipeline</div>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon">&#128202;</div>
+        <div class="integration-name">Google Sheets</div>
+        <div class="integration-desc">Data Sync</div>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon">&#128722;</div>
+        <div class="integration-name">Shopify India</div>
+        <div class="integration-desc">E-commerce</div>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon">&#128231;</div>
+        <div class="integration-name">Gmail</div>
+        <div class="integration-desc">Email</div>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon">&#128196;</div>
+        <div class="integration-name">Google Docs</div>
+        <div class="integration-desc">Documents</div>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon">&#128247;</div>
+        <div class="integration-name">Instagram</div>
+        <div class="integration-desc">Social</div>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon">&#128187;</div>
+        <div class="integration-name">Slack</div>
+        <div class="integration-desc">Team Chat</div>
+      </div>
+      <div class="integration-card">
+        <div class="integration-icon">&#128736;</div>
+        <div class="integration-name">Zapier</div>
+        <div class="integration-desc">1000+ Apps</div>
+      </div>
+    </div>
+    <div class="integration-more">
+      <span>+ 50 more integrations coming soon</span>
     </div>
   </div>
 </section>
 
 <!-- Features -->
-<section class="section" id="features">
+<section class="section" id="features" style="background:var(--surface);">
   <div class="container">
     <div class="section-header animate-on-scroll">
       <div class="tag tag-gold" style="margin-bottom:12px;">Platform</div>
@@ -85,7 +284,7 @@
       <div class="feature-card animate-on-scroll" data-accent="purple">
         <div class="feature-icon" style="background:var(--purple-dim);">&#128274;</div>
         <h4>Enterprise Security</h4>
-        <p>SOC 2 compliant, end-to-end encryption. Your data and your clients' data are always protected.</p>
+        <p>SOC 2 compliant, end-to-end encryption. Your data stays in India, always protected.</p>
       </div>
       <div class="feature-card animate-on-scroll" data-accent="green">
         <div class="feature-icon" style="background:var(--green-dim);">&#128257;</div>
@@ -102,21 +301,22 @@
 </section>
 
 <!-- Tools -->
-<section class="section" id="tools" style="background:var(--surface);">
+<section class="section" id="tools">
   <div class="container">
     <div class="section-header animate-on-scroll">
       <div class="tag tag-green" style="margin-bottom:12px;">7 Tools</div>
       <h2>Your AI-Powered <span class="text-gold">Toolkit</span></h2>
-      <p>Each tool is designed to replace hours of manual work with AI-driven automation. Use one or all seven.</p>
+      <p>Each tool replaces hours of manual work. Use one or all seven &mdash; they work together.</p>
     </div>
     <div class="grid-3" style="gap:16px;">
-      <div class="card animate-on-scroll" style="border-top:3px solid var(--gold);">
+      <div class="card animate-on-scroll" style="border-top:3px solid var(--accent);">
         <div style="font-size:28px;margin-bottom:12px;">&#9889;</div>
         <h4>AI Automation Builder</h4>
         <p style="font-size:13px;color:var(--muted);margin-top:6px;margin-bottom:14px;">Build workflows, chatbots & CRM automations. Describe your process, AI builds the automation.</p>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
           <span class="tag tag-gold">Workflows</span>
           <span class="tag tag-green">CRM</span>
+          <span class="tag tag-purple">WhatsApp</span>
         </div>
         <a href="signup.html" class="btn btn-ghost btn-sm tool-try-btn" data-tool-href="tools/automation.html">Try Tool &rarr;</a>
       </div>
@@ -133,10 +333,10 @@
       <div class="card animate-on-scroll" style="border-top:3px solid var(--green);">
         <div style="font-size:28px;margin-bottom:12px;">&#129302;</div>
         <h4>AI Chatbot Creator</h4>
-        <p style="font-size:13px;color:var(--muted);margin-top:6px;margin-bottom:14px;">Custom AI chatbots for support, lead qualification & sales. Train with your data, deploy anywhere.</p>
+        <p style="font-size:13px;color:var(--muted);margin-top:6px;margin-bottom:14px;">Custom AI chatbots for support, lead qualification & sales. Train with your data, deploy on WhatsApp.</p>
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
           <span class="tag tag-green">Support</span>
-          <span class="tag tag-gold">Sales</span>
+          <span class="tag tag-gold">WhatsApp</span>
         </div>
         <a href="signup.html" class="btn btn-ghost btn-sm tool-try-btn" data-tool-href="tools/chatbot.html">Try Tool &rarr;</a>
       </div>
@@ -185,7 +385,7 @@
 </section>
 
 <!-- How It Works -->
-<section class="section">
+<section class="section" style="background:var(--surface);">
   <div class="container">
     <div class="section-header animate-on-scroll">
       <h2>How It <span class="text-gold">Works</span></h2>
@@ -195,35 +395,95 @@
       <div class="step-item">
         <div class="step-num">1</div>
         <h4>Sign Up Free</h4>
-        <p>Create your account in 30 seconds. No credit card needed.</p>
+        <p>Create your account in 30 seconds. No credit card needed. Start with the free plan.</p>
       </div>
       <div class="step-item">
         <div class="step-num">2</div>
-        <h4>Choose Your Tools</h4>
-        <p>Pick from 7 AI tools. Use one or all of them.</p>
+        <h4>Describe What You Need</h4>
+        <p>Tell AI what to build in plain English. Pick from 7 tools or combine them.</p>
       </div>
       <div class="step-item">
         <div class="step-num">3</div>
-        <h4>Launch & Scale</h4>
-        <p>Deploy your AI solutions and watch your business grow.</p>
+        <h4>Deploy & Integrate</h4>
+        <p>One click to go live. Connect WhatsApp, Razorpay, Zoho, and more.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Pricing Preview -->
+<!-- Featured Testimonial -->
+<section class="section" id="testimonials">
+  <div class="container">
+    <div class="section-header animate-on-scroll">
+      <h2>Real Results from <span class="text-gold">Real Businesses</span></h2>
+      <p>See how Indian businesses are saving time and money with Maxhope.AI.</p>
+    </div>
+
+    <div class="testimonial-featured animate-on-scroll">
+      <div class="testimonial-metric">
+        <div class="testimonial-metric-num">&#8377;3.2L</div>
+        <div class="testimonial-metric-label">Saved per year</div>
+      </div>
+      <div>
+        <div class="testimonial-quote">"Maxhope.AI replaced 3 separate tools for us. The chatbot creator alone saved us &#8377;3.2 lakh per year in support costs. We deployed a WhatsApp bot in 20 minutes."</div>
+        <div class="testimonial-quote-author">
+          <div class="testimonial-avatar" style="width:40px;height:40px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;">RS</div>
+          <div>
+            <div class="testimonial-quote-name">Rajesh Sharma</div>
+            <div class="testimonial-quote-role">CEO, TechFlow Solutions &mdash; Mumbai</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3 animate-on-scroll">
+      <div class="testimonial-card">
+        <div class="testimonial-text">"Built our entire agency website and 3 client chatbots in one weekend. The AI generation quality is incredible. Worth every rupee."</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">AP</div>
+          <div>
+            <div class="testimonial-name">Ananya Patel</div>
+            <div class="testimonial-role">Marketing Director, GrowthLab &mdash; Bangalore</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-text">"The cloud consulting tool analyzed our AWS setup and found &#8377;1.6L/year in savings we didn't know about. ROI in the first week."</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">VK</div>
+          <div>
+            <div class="testimonial-name">Vikram Kumar</div>
+            <div class="testimonial-role">CTO, DataScale Inc &mdash; Hyderabad</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-text">"Connected our Shopify store to WhatsApp through Maxhope. Now every order gets auto-confirmation and tracking. Customers love it."</div>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">PM</div>
+          <div>
+            <div class="testimonial-name">Priya Mehta</div>
+            <div class="testimonial-role">Founder, StyleKart &mdash; Delhi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
 <section class="section" id="pricing" style="background:var(--surface);">
   <div class="container">
     <div class="section-header animate-on-scroll">
       <div class="tag tag-gold" style="margin-bottom:12px;">Pricing</div>
       <h2>Simple, Transparent <span class="text-gold">Pricing</span></h2>
-      <p>Start free. Upgrade when you're ready. No hidden fees.</p>
+      <p>Start free. Upgrade when you're ready. INR pricing, no hidden fees, no surprises.</p>
     </div>
     <div class="grid-3 animate-on-scroll" style="max-width:900px;margin:0 auto;">
       <!-- Starter -->
       <div class="pricing-card">
         <div class="pricing-name">Starter</div>
-        <div class="pricing-price">$0 <span>/7 days</span></div>
+        <div class="pricing-price">&#8377;0 <span>/7 days</span></div>
         <div class="pricing-desc">Perfect to explore the platform</div>
         <ul class="pricing-features">
           <li>Access to 2 AI tools</li>
@@ -233,28 +493,28 @@
           <li class="disabled">All 7 tools</li>
           <li class="disabled">API access</li>
         </ul>
-        <a href="signup.html" class="btn btn-secondary btn-block">Start Free Trial</a>
+        <a href="signup.html" class="btn btn-secondary btn-block">Start Free</a>
       </div>
       <!-- Pro -->
       <div class="pricing-card popular">
         <div class="pricing-badge">Most Popular</div>
         <div class="pricing-name">Pro</div>
-        <div class="pricing-price"><span data-usd="49">$49</span> <span>/mo</span></div>
+        <div class="pricing-price"><span data-usd="49">&#8377;999</span> <span>/mo</span></div>
         <div class="pricing-desc">For serious builders & agencies</div>
         <ul class="pricing-features">
           <li>All 7 AI tools</li>
           <li>5,000 AI generations/mo</li>
           <li>Premium templates</li>
-          <li>Priority email support</li>
+          <li>Priority WhatsApp support</li>
           <li>25 projects</li>
           <li>API access</li>
         </ul>
-        <a href="signup.html" class="btn btn-primary btn-block">Get Pro</a>
+        <a href="signup.html" class="btn btn-primary btn-block">Get Pro &mdash; 7 Days Free</a>
       </div>
       <!-- Enterprise -->
       <div class="pricing-card">
         <div class="pricing-name">Enterprise</div>
-        <div class="pricing-price"><span data-usd="149">$149</span> <span>/mo</span></div>
+        <div class="pricing-price"><span data-usd="149">&#8377;4,999</span> <span>/mo</span></div>
         <div class="pricing-desc">For teams & agencies at scale</div>
         <ul class="pricing-features">
           <li>Everything in Pro</li>
@@ -271,67 +531,25 @@
   </div>
 </section>
 
-<!-- Testimonials -->
-<section class="section" id="testimonials">
-  <div class="container">
-    <div class="section-header animate-on-scroll">
-      <h2>What Our Users <span class="text-gold">Say</span></h2>
-      <p>Join thousands of businesses already growing with Maxhope.AI.</p>
-    </div>
-    <div class="grid-3 animate-on-scroll">
-      <div class="testimonial-card">
-        <div class="testimonial-text">Maxhope.AI replaced 3 separate tools for us. The chatbot creator alone saved us $4K/month in support costs. Absolute game changer.</div>
-        <div class="testimonial-author">
-          <div class="testimonial-avatar">RS</div>
-          <div>
-            <div class="testimonial-name">Rajesh Sharma</div>
-            <div class="testimonial-role">CEO, TechFlow Solutions</div>
-          </div>
-        </div>
-      </div>
-      <div class="testimonial-card">
-        <div class="testimonial-text">Built our entire agency website and 3 client chatbots in one weekend. The AI generation quality is incredible. Worth every penny.</div>
-        <div class="testimonial-author">
-          <div class="testimonial-avatar">AP</div>
-          <div>
-            <div class="testimonial-name">Ananya Patel</div>
-            <div class="testimonial-role">Marketing Director, GrowthLab</div>
-          </div>
-        </div>
-      </div>
-      <div class="testimonial-card">
-        <div class="testimonial-text">The cloud consulting tool analyzed our AWS setup and found $2K/month in savings we didn't know about. ROI in the first week.</div>
-        <div class="testimonial-author">
-          <div class="testimonial-avatar">MK</div>
-          <div>
-            <div class="testimonial-name">Michael Chen</div>
-            <div class="testimonial-role">CTO, DataScale Inc</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
+<!-- Final CTA -->
 <section class="section">
   <div class="container">
     <div class="cta-section animate-on-scroll">
-      <h2>Ready to <span class="text-gold">Automate</span> Your Business?</h2>
-      <p>Join 10,000+ businesses using AI to save time, cut costs, and scale faster.</p>
+      <h2>Stop paying for tools<br>that weren't built for <span class="text-gold">you</span></h2>
+      <p>Join 50+ Indian businesses that switched from Zapier, Wix, and Intercom to one AI-powered platform. Built here. Priced here.</p>
       <div class="cta-form">
-        <input type="email" class="form-input" placeholder="Enter your email" />
-        <button class="btn btn-primary" onclick="window.location.href='signup.html'">Get Started</button>
+        <input type="email" class="form-input" placeholder="Enter your work email" />
+        <button class="btn btn-primary" onclick="window.location.href='signup.html'">Start Free Trial</button>
       </div>
-      <p style="margin-top:14px;font-size:12px;color:var(--dim);">No credit card required &bull; 7-day free trial</p>
+      <p style="margin-top:14px;font-size:12px;color:var(--dim);">No credit card required &bull; Free forever plan &bull; &#127470;&#127475; Data stays in India</p>
     </div>
   </div>
 </section>
 
 <div id="footer-container"></div>
 <script src="js/app.js"></script>
+<script src="js/hope-chat.js"></script>
 <script>
-// Update "Try Tool" buttons for logged-in users to go directly to the tool
 document.addEventListener('DOMContentLoaded', () => {
   if (Auth.isLoggedIn()) {
     document.querySelectorAll('.tool-try-btn').forEach(btn => {

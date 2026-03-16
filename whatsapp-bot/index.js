@@ -6,10 +6,10 @@
    ============================================ */
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
 const { execSync, exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const readline = require('readline');
 
 // ---- Configuration ----
 const PROJECT_DIR = path.resolve(__dirname, '..');
@@ -18,7 +18,7 @@ const REPO_URL = 'https://github.com/AbhijeetM777/maxhope-ai';
 const BOT_PREFIX = '!';  // Commands start with !
 const OWNER_NUMBER = null; // Set to your number like '91XXXXXXXXXX@c.us' to restrict access, null = any sender
 
-// ---- WhatsApp Client ----
+// ---- WhatsApp Client (Pairing Code mode) ----
 const client = new Client({
   authStrategy: new LocalAuth({ dataPath: path.join(__dirname, '.wwebjs_auth') }),
   puppeteer: {
@@ -379,15 +379,34 @@ client.on('message', async (msg) => {
   }
 });
 
-// ---- QR Code & Auth ----
-client.on('qr', (qr) => {
-  console.log('\n╔══════════════════════════════════════╗');
-  console.log('║   SCAN THIS QR CODE WITH WHATSAPP   ║');
-  console.log('╠══════════════════════════════════════╣');
-  console.log('║  Open WhatsApp → Linked Devices →   ║');
-  console.log('║  Link a Device → Scan below          ║');
-  console.log('╚══════════════════════════════════════╝\n');
-  qrcode.generate(qr, { small: true });
+// ---- Pairing Code Auth ----
+let pairingPhoneNumber = null;
+let pairingCodeRequested = false;
+
+client.on('qr', async () => {
+  if (pairingCodeRequested) return; // only request once
+  pairingCodeRequested = true;
+
+  // Small delay to let WhatsApp Web fully load
+  await new Promise(r => setTimeout(r, 3000));
+
+  try {
+    const code = await client.requestPairingCode(pairingPhoneNumber, true);
+    console.log('\n╔══════════════════════════════════════╗');
+    console.log('║      YOUR WHATSAPP PAIRING CODE      ║');
+    console.log('╠══════════════════════════════════════╣');
+    console.log(`║                                      ║`);
+    console.log(`║            ${code}                    ║`);
+    console.log(`║                                      ║`);
+    console.log('╠══════════════════════════════════════╣');
+    console.log('║  WhatsApp → Linked Devices →         ║');
+    console.log('║  Link a Device → Link with phone     ║');
+    console.log('║  number instead → Enter code above   ║');
+    console.log('╚══════════════════════════════════════╝\n');
+  } catch (e) {
+    console.error('❌ Failed to get pairing code:', e.message);
+    pairingCodeRequested = false; // allow retry
+  }
 });
 
 client.on('ready', () => {
@@ -414,6 +433,13 @@ client.on('disconnected', (reason) => {
 
 // ---- Start ----
 console.log('🚀 Starting Maxhope.AI WhatsApp Remote Control...');
-console.log(`📂 Project: ${PROJECT_DIR}`);
-console.log('⏳ Initializing WhatsApp connection...\n');
-client.initialize();
+console.log(`📂 Project: ${PROJECT_DIR}\n`);
+
+const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+rl.question('📱 Enter your WhatsApp number with country code (e.g. 919876543210): ', (number) => {
+  rl.close();
+  pairingPhoneNumber = number.replace(/[^0-9]/g, '');
+  console.log(`\n⏳ Connecting to WhatsApp for +${pairingPhoneNumber}...`);
+  console.log('⏳ This may take 15-30 seconds, please wait...\n');
+  client.initialize();
+});

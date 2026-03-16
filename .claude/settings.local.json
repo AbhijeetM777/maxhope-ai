@@ -8,7 +8,21 @@
       "Bash(export PATH=\"$PATH:/c/Program Files/GitHub CLI\")",
       "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" --version)",
       "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth status)",
-      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth login --web --git-protocol https)"
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth login --web --git-protocol https)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" repo create maxhope-ai --public --source=. --push --description \"Maxhope.AI - AI SaaS Platform with 7 AI-powered tools\")",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" api repos/AbhijeetM777/maxhope-ai/pages -X POST -f build_type=legacy -f source='{\"\"branch\"\":\"\"master\"\",\"\"path\"\":\"\"/\"\"}')",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" api repos/AbhijeetM777/maxhope-ai/pages)",
+      "Bash(start cmd:*)",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(rmdir /S /Q \"C:\\\\Users\\\\USER\\\\OneDrive\\\\Desktop\\\\Project Ai\\\\webiste for automation\\\\whatsapp-bot\\\\.wwebjs_auth\")",
+      "Bash(taskkill /F /IM chrome.exe)",
+      "Bash(taskkill /F /IM chromium.exe)",
+      "Bash(powershell -Command \"Get-Process -Name chrome,chromium,node -ErrorAction SilentlyContinue | Stop-Process -Force\")",
+      "Bash(find . -name \"*.html\" -not -path \"*/node_modules/*\" -exec sed -i 's|https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900\\\\&family=Space+Mono:wght@400;700\\\\&display=swap|https://fonts.googleapis.com/css2?family=Bebas+Neue\\\\&family=DM+Sans:wght@300;400;500;600;700\\\\&family=Playfair+Display:ital,wght@0,700;0,900;1,700\\\\&family=Syne:wght@400;500;600;700\\\\&display=swap|g' {} +)",
+      "Bash(for f:*)",
+      "Bash(do sed:*)",
+      "Bash(done)",
+      "Bash(grep -l \"hope-chat\" *.html tools/*.html)"
     ]
   }
 }

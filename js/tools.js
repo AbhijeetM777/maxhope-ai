@@ -33,19 +33,20 @@ const ProjectManager = {
     if (existing) existing.remove();
 
     const base = typeof getBasePath === 'function' ? getBasePath() : '';
-    const liveUrl = `https://app.maxhope.ai/${project.type}/${project.id}`;
-    const embedCode = `<script src="https://cdn.maxhope.ai/embed/${project.id}.js"><\/script>`;
+    const siteBase = 'https://abhijeetm777.github.io/maxhope-ai';
+    const liveUrl = `${siteBase}/tools/${project.type}.html?project=${project.id}`;
+    const embedCode = `<script src="${siteBase}/embed/${project.id}.js"><\/script>`;
 
     const detailsMap = {
       automation: { icon: '&#9889;', label: 'Workflow', actions: `
-        <div class="deploy-detail"><span class="deploy-detail-label">Webhook URL</span><code class="deploy-detail-code">https://api.maxhope.ai/hooks/${project.id}</code><button class="btn btn-ghost btn-sm" onclick="copyToClipboard('https://api.maxhope.ai/hooks/${project.id}')">Copy</button></div>
-        <div class="deploy-detail"><span class="deploy-detail-label">API Endpoint</span><code class="deploy-detail-code">POST /api/v1/automations/${project.id}/run</code><button class="btn btn-ghost btn-sm" onclick="copyToClipboard('https://api.maxhope.ai/v1/automations/${project.id}/run')">Copy</button></div>
+        <div class="deploy-detail"><span class="deploy-detail-label">Webhook URL</span><code class="deploy-detail-code">${siteBase}/api/hooks/${project.id}</code><button class="btn btn-ghost btn-sm" onclick="copyToClipboard('${siteBase}/api/hooks/${project.id}')">Copy</button></div>
+        <div class="deploy-detail"><span class="deploy-detail-label">API Endpoint</span><code class="deploy-detail-code">POST /api/v1/automations/${project.id}/run</code><button class="btn btn-ghost btn-sm" onclick="copyToClipboard('${siteBase}/api/v1/automations/${project.id}/run')">Copy</button></div>
         <div class="deploy-detail"><span class="deploy-detail-label">Integrations</span><span>Zapier, Make.com, HubSpot, Slack</span></div>`
       },
       website: { icon: '&#127760;', label: 'Website', actions: `
         <div class="deploy-detail"><span class="deploy-detail-label">Live URL</span><code class="deploy-detail-code">${liveUrl}</code><button class="btn btn-ghost btn-sm" onclick="copyToClipboard('${liveUrl}')">Copy</button></div>
         <div class="deploy-detail"><span class="deploy-detail-label">Custom Domain</span><span>Connect via Settings → Domains</span></div>
-        <div class="deploy-detail"><span class="deploy-detail-label">Hosting</span><span>Vercel Edge Network (99.9% uptime)</span></div>`
+        <div class="deploy-detail"><span class="deploy-detail-label">Hosting</span><span>GitHub Pages (99.9% uptime)</span></div>`
       },
       chatbot: { icon: '&#129302;', label: 'Chatbot', actions: `
         <div class="deploy-detail"><span class="deploy-detail-label">Embed Code</span><code class="deploy-detail-code">${embedCode.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code><button class="btn btn-ghost btn-sm" onclick="copyToClipboard('${embedCode}')">Copy</button></div>
@@ -88,7 +89,10 @@ const ProjectManager = {
           <div class="deploy-details-box">
             ${d.actions}
           </div>
-          <div style="display:flex;gap:10px;margin-top:20px;">
+          <div style="background:rgba(232,55,58,0.08);border:1px solid rgba(232,55,58,0.2);border-radius:8px;padding:10px 14px;margin-top:14px;font-size:13px;color:var(--text-secondary);">
+            <strong style="color:var(--accent);">Demo Mode:</strong> This is a simulated deployment. Your project config is saved locally and visible in My Projects.
+          </div>
+          <div style="display:flex;gap:10px;margin-top:16px;">
             <a href="${base}projects.html" class="btn btn-secondary" style="flex:1;text-align:center;">View My Projects</a>
             <button class="btn btn-primary" style="flex:1;" onclick="document.getElementById('deploy-success-modal').remove()">Done</button>
           </div>

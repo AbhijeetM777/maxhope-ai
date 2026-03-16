@@ -55,7 +55,7 @@ const ProjectsPage = {
     grid.innerHTML = filtered.map(p => {
       const date = new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
       const time = new Date(p.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-      const liveUrl = `https://app.maxhope.ai/${p.type}/${p.id}`;
+      const liveUrl = `https://abhijeetm777.github.io/maxhope-ai/tools/${p.type}.html?project=${p.id}`;
       const icon = icons[p.type] || '&#128196;';
       const color = colors[p.type] || 'var(--accent)';
       const label = labels[p.type] || 'Project';

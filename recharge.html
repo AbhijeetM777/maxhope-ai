@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Billing & Recharge - Maxhope.AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="dashboard-layout">
+  <div id="sidebar-container"></div>
+  <main class="dash-main">
+    <div id="topbar-container"></div>
+    <div class="dash-content">
+
+      <!-- Page Header -->
+      <div class="welcome-banner" style="margin-bottom:28px;">
+        <h2>&#128179; Billing &amp; Recharge</h2>
+        <p>Manage your subscription and top up generations.</p>
+      </div>
+
+      <!-- Subscription Status Banner -->
+      <div class="recharge-section">
+        <div class="recharge-section-title">Subscription Status</div>
+        <div class="recharge-status-banner" id="status-banner">
+          <div class="recharge-stat-item">
+            <label>Plan</label>
+            <div class="stat-value" id="rb-plan">—</div>
+          </div>
+          <div class="recharge-stat-item">
+            <label>Status</label>
+            <div id="rb-status-badge">—</div>
+          </div>
+          <div class="recharge-stat-item">
+            <label>Expires</label>
+            <div class="stat-value" style="font-size:14px;font-family:var(--font-body);" id="rb-expiry">—</div>
+          </div>
+          <div class="recharge-stat-item">
+            <label>Generations Left</label>
+            <div class="stat-value text-gold" id="rb-gens">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pack Selection -->
+      <div class="recharge-section" id="packs-section">
+        <div class="recharge-section-title">Choose a Recharge Pack</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Minimum recharge equivalent to ₹1,000 INR. Generations stack — unused ones carry forward.</p>
+        <div class="recharge-packs-page-grid" id="packs-grid"></div>
+        <div style="font-size:12px;color:var(--dim);margin-top:8px;">* All amounts shown in your selected currency. Prices shown are equivalents of INR rates.</div>
+      </div>
+
+      <!-- Payment Section -->
+      <div class="recharge-payment-section hidden" id="payment-section">
+        <div class="recharge-section-title" style="border-bottom:none;padding-bottom:0;margin-bottom:20px;">Payment Details</div>
+
+        <!-- Selected Pack Summary -->
+        <div class="recharge-pack-summary" id="page-pack-summary" style="margin-bottom:24px;"></div>
+
+        <!-- Card Form -->
+        <div id="payment-form">
+          <div class="form-group">
+            <label class="form-label">Cardholder Name</label>
+            <input type="text" class="form-input" id="page-card-name" placeholder="John Doe" style="max-width:400px;">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Card Number</label>
+            <input type="text" class="form-input" id="page-card-number" placeholder="1234 5678 9012 3456" maxlength="19"
+              oninput="this.value=this.value.replace(/[^0-9]/g,'').replace(/(.{4})/g,'$1 ').trim()"
+              style="max-width:400px;">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:400px;" class="form-group">
+            <div>
+              <label class="form-label">Expiry (MM/YY)</label>
+              <input type="text" class="form-input" id="page-card-expiry" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)">
+            </div>
+            <div>
+              <label class="form-label">CVV</label>
+              <input type="text" class="form-input" id="page-card-cvv" placeholder="123" maxlength="4"
+                oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+            </div>
+          </div>
+          <div id="page-payment-error" class="form-error hidden" style="margin-bottom:12px;max-width:400px;"></div>
+          <div style="display:flex;gap:12px;margin-top:8px;">
+            <button class="btn btn-secondary" onclick="RechargePageController.cancelPayment()">&#8592; Back to Packs</button>
+            <button class="btn btn-primary" onclick="RechargePageController.processPayment()">&#128274; Pay &amp; Activate</button>
+          </div>
+        </div>
+
+        <!-- Processing State -->
+        <div id="payment-processing" class="hidden" style="text-align:center;padding:40px 0;">
+          <div class="spinner" style="margin:0 auto 20px;"></div>
+          <div style="font-size:16px;font-weight:600;">Processing payment...</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:6px;">Please wait, do not close this page</div>
+        </div>
+
+        <!-- Success State -->
+        <div id="payment-success" class="hidden" style="text-align:center;padding:40px 0;">
+          <div style="font-size:56px;margin-bottom:20px;">&#10035;</div>
+          <div style="font-size:24px;font-weight:800;margin-bottom:8px;">Payment Successful!</div>
+          <div style="font-size:14px;color:var(--muted);margin-bottom:24px;" id="success-detail"></div>
+          <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+        </div>
+      </div>
+
+      <!-- Order History -->
+      <div class="recharge-section">
+        <div class="recharge-section-title">Order History</div>
+        <div id="order-history-container">
+          <div style="color:var(--muted);font-size:14px;padding:20px 0;">No recharge history yet.</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/subscription.js"></script>
+<script src="js/recharge.js"></script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Website Builder - Maxhope.AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="dashboard-layout">
+  <div id="sidebar-container"></div>
+  <main class="dash-main">
+    <div id="topbar-container"></div>
+    <div class="dash-content">
+      <div class="tool-page-header">
+        <div class="tool-page-icon" style="background:var(--blue-dim);">&#127760;</div>
+        <div>
+          <h2>AI Website Builder</h2>
+          <p>Generate landing pages, portfolios & web apps from a description</p>
+        </div>
+      </div>
+
+      <!-- Template Selection -->
+      <h4 style="margin-bottom:12px;">Choose a Template</h4>
+      <div class="grid-3" style="margin-bottom:24px;" id="template-grid">
+        <div class="template-card selected" onclick="selectTemplate(this, 'Landing Page')">
+          <div class="template-icon">&#128640;</div>
+          <div class="template-name">Landing Page</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate(this, 'Portfolio')">
+          <div class="template-icon">&#127912;</div>
+          <div class="template-name">Portfolio</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate(this, 'SaaS')">
+          <div class="template-icon">&#128187;</div>
+          <div class="template-name">SaaS Product</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate(this, 'E-commerce')">
+          <div class="template-icon">&#128722;</div>
+          <div class="template-name">E-commerce</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate(this, 'Blog')">
+          <div class="template-icon">&#128221;</div>
+          <div class="template-name">Blog</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate(this, 'App Landing')">
+          <div class="template-icon">&#128241;</div>
+          <div class="template-name">App Landing</div>
+        </div>
+      </div>
+
+      <div class="tool-layout">
+        <div class="tool-panel">
+          <h3>&#9998; Website Details</h3>
+          <form onsubmit="event.preventDefault(); generateWebsite({businessName: document.getElementById('biz-name').value, template: selectedTemplate, industry: document.getElementById('biz-industry').value})">
+            <div class="form-group">
+              <label class="form-label">Business Name</label>
+              <input type="text" class="form-input" id="biz-name" placeholder="e.g., TechFlow Solutions" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Industry</label>
+              <select class="form-select" id="biz-industry">
+                <option>Technology</option>
+                <option>Real Estate</option>
+                <option>Healthcare</option>
+                <option>Finance</option>
+                <option>E-commerce</option>
+                <option>Education</option>
+                <option>Marketing</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea class="form-textarea" placeholder="Describe your business and what you want the website to convey..." rows="4"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Color Scheme</label>
+              <select class="form-select">
+                <option>Dark & Premium</option>
+                <option>Light & Clean</option>
+                <option>Bold & Colorful</option>
+                <option>Minimal</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">&#127760; Generate Website</button>
+          </form>
+        </div>
+
+        <div class="tool-panel">
+          <h3>&#128064; Preview</h3>
+          <div class="tool-output" id="website-output">
+            <div class="tool-output-placeholder">
+              <div class="icon">&#127760;</div>
+              <div>Select a template, fill in details,<br>and generate your website</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="../js/app.js"></script>
+<script src="../js/subscription.js"></script>
+<script src="../js/tools.js"></script>
+<script>
+Auth.requireAuth();
+let selectedTemplate = 'Landing Page';
+function selectTemplate(el, name) {
+  document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTemplate = name;
+}
+</script>
+</body>
+</html>

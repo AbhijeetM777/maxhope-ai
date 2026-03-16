@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Cloud Consulting - Maxhope.AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="dashboard-layout">
+  <div id="sidebar-container"></div>
+  <main class="dash-main">
+    <div id="topbar-container"></div>
+    <div class="dash-content">
+      <div class="tool-page-header">
+        <div class="tool-page-icon" style="background:var(--blue-dim);">&#9729;&#65039;</div>
+        <div>
+          <h2>AI Cloud Consulting</h2>
+          <p>Cloud infrastructure analysis, cost optimization & migration planning</p>
+        </div>
+      </div>
+
+      <div class="tool-layout">
+        <div class="tool-panel">
+          <h3>&#9729;&#65039; Current Infrastructure</h3>
+          <form onsubmit="event.preventDefault(); generateCloudAnalysis({provider: document.getElementById('cloud-provider').value, spend: document.getElementById('cloud-spend').value, services: document.getElementById('cloud-services').value})">
+            <div class="form-group">
+              <label class="form-label">Cloud Provider</label>
+              <select class="form-select" id="cloud-provider">
+                <option>AWS</option>
+                <option>Azure</option>
+                <option>Google Cloud (GCP)</option>
+                <option>Oracle Cloud (OCI)</option>
+                <option>On-Premise</option>
+                <option>Multi-Cloud</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Monthly Cloud Spend ($)</label>
+              <input type="number" class="form-input" id="cloud-spend" placeholder="e.g., 5000" required min="100">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Number of Services/Instances</label>
+              <input type="number" class="form-input" id="cloud-services" placeholder="e.g., 15" min="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Primary Goals</label>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <label class="form-check"><input type="checkbox" checked> Cost Reduction</label>
+                <label class="form-check"><input type="checkbox" checked> Scalability</label>
+                <label class="form-check"><input type="checkbox"> Security Hardening</label>
+                <label class="form-check"><input type="checkbox"> Compliance (SOC 2, HIPAA)</label>
+                <label class="form-check"><input type="checkbox"> Migration from On-Premise</label>
+                <label class="form-check"><input type="checkbox"> AI/ML Integration</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Additional Context</label>
+              <textarea class="form-textarea" placeholder="Describe your current setup, pain points, or specific requirements..." rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">&#128270; Analyze & Recommend</button>
+          </form>
+        </div>
+
+        <div class="tool-panel">
+          <h3>&#128200; Analysis Results</h3>
+          <div class="tool-output" id="cloud-output">
+            <div class="tool-output-placeholder">
+              <div class="icon">&#9729;&#65039;</div>
+              <div>Enter your infrastructure details<br>for AI-powered optimization analysis</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="../js/app.js"></script>
+<script src="../js/subscription.js"></script>
+<script src="../js/tools.js"></script>
+<script>Auth.requireAuth();</script>
+</body>
+</html>

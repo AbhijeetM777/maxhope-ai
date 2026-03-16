@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Maxhope.AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="dashboard-layout">
+  <div id="sidebar-container"></div>
+  <main class="dash-main">
+    <div id="topbar-container"></div>
+    <div class="dash-content" id="dash-content">
+      <!-- Welcome -->
+      <div class="welcome-banner">
+        <h2>Welcome back, <span id="user-name">User</span> &#128075;</h2>
+        <p>You have <span id="generations-left" class="mono text-gold">--</span> AI generations remaining this month.</p>
+      </div>
+
+      <!-- Subscription Status Card -->
+      <div id="subscription-card-container"></div>
+
+      <!-- Stats -->
+      <div class="grid-4" style="margin-bottom:28px;">
+        <div class="stat-card">
+          <div class="stat-label">Total Projects</div>
+          <div class="stat-value text-gold" id="stat-projects">0</div>
+          <div class="stat-change up">&#9650; Active</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">AI Generations</div>
+          <div class="stat-value text-green" id="stat-generations">0</div>
+          <div class="stat-change up">This month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Active Automations</div>
+          <div class="stat-value text-blue" id="stat-automations">0</div>
+          <div class="stat-change up">Running</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Est. Savings</div>
+          <div class="stat-value text-purple" id="stat-savings">$0</div>
+          <div class="stat-change up">This month</div>
+        </div>
+      </div>
+
+      <!-- Usage -->
+      <div class="card" style="margin-bottom:28px;">
+        <div class="flex-between" style="margin-bottom:4px;">
+          <h4>Usage This Month</h4>
+          <span class="mono text-dim" style="font-size:13px;" id="usage-text">0 / 100</span>
+        </div>
+        <div class="usage-bar">
+          <div class="usage-fill" id="usage-fill" style="width:0%"></div>
+        </div>
+        <p style="font-size:12px;color:var(--dim);margin-top:8px;" id="usage-note">Upgrade to Pro for 5,000 generations/mo</p>
+      </div>
+
+      <!-- Quick Access Tools -->
+      <h3 style="margin-bottom:16px;">&#9889; AI Tools</h3>
+      <div class="grid-3" style="margin-bottom:28px;" id="tools-grid">
+        <div class="tool-card" data-accent="gold" onclick="location.href='tools/automation.html'">
+          <div class="tool-icon" style="background:var(--gold-dim);">&#9889;</div>
+          <h4>Automation Builder</h4>
+          <p>Build workflows, chatbots & CRM automations with AI.</p>
+          <span class="btn btn-primary btn-sm">Open Tool</span>
+        </div>
+        <div class="tool-card" data-accent="blue" onclick="location.href='tools/website-builder.html'">
+          <div class="tool-icon" style="background:var(--blue-dim);">&#127760;</div>
+          <h4>Website Builder</h4>
+          <p>AI-generated landing pages, portfolios & web apps.</p>
+          <span class="btn btn-primary btn-sm">Open Tool</span>
+        </div>
+        <div class="tool-card" data-accent="green" onclick="location.href='tools/chatbot.html'">
+          <div class="tool-icon" style="background:var(--green-dim);">&#129302;</div>
+          <h4>Chatbot Creator</h4>
+          <p>Custom AI chatbots for support, sales & lead-gen.</p>
+          <span class="btn btn-primary btn-sm">Open Tool</span>
+        </div>
+        <div class="tool-card" data-accent="purple" onclick="location.href='tools/microsaas.html'">
+          <div class="tool-icon" style="background:var(--purple-dim);">&#128200;</div>
+          <h4>Micro-SaaS Generator</h4>
+          <p>Get a full SaaS blueprint from just an idea.</p>
+          <span class="btn btn-primary btn-sm">Open Tool</span>
+        </div>
+        <div class="tool-card" data-accent="gold" onclick="location.href='tools/email-outreach.html'">
+          <div class="tool-icon" style="background:var(--gold-dim);">&#128231;</div>
+          <h4>Email & Outreach</h4>
+          <p>AI-powered cold email campaigns & sequences.</p>
+          <span class="btn btn-primary btn-sm">Open Tool</span>
+        </div>
+        <div class="tool-card" data-accent="blue" onclick="location.href='tools/cloud-consulting.html'">
+          <div class="tool-icon" style="background:var(--blue-dim);">&#9729;&#65039;</div>
+          <h4>Cloud Consulting</h4>
+          <p>Cloud migration planning & cost optimization.</p>
+          <span class="btn btn-primary btn-sm">Open Tool</span>
+        </div>
+        <div class="tool-card" data-accent="green" onclick="location.href='tools/content-studio.html'">
+          <div class="tool-icon" style="background:var(--green-dim);">&#9997;&#65039;</div>
+          <h4>Content Studio</h4>
+          <p>Blog posts, social media & SEO content at scale.</p>
+          <span class="btn btn-primary btn-sm">Open Tool</span>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="card">
+        <h4 style="margin-bottom:16px;">Recent Activity</h4>
+        <div id="activity-list">
+          <div class="activity-item">
+            <div class="activity-dot" style="background:var(--gold)"></div>
+            <div class="activity-text">Welcome to Maxhope.AI! Start by exploring any tool above.</div>
+            <div class="activity-time">Just now</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/subscription.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

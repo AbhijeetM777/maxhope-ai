@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Email & Outreach - Maxhope.AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="dashboard-layout">
+  <div id="sidebar-container"></div>
+  <main class="dash-main">
+    <div id="topbar-container"></div>
+    <div class="dash-content">
+      <div class="tool-page-header">
+        <div class="tool-page-icon" style="background:var(--gold-dim);">&#128231;</div>
+        <div>
+          <h2>AI Email & Outreach</h2>
+          <p>Generate personalized cold email campaigns & follow-up sequences</p>
+        </div>
+      </div>
+
+      <div class="tool-layout">
+        <div class="tool-panel">
+          <h3>&#128231; Campaign Setup</h3>
+          <form onsubmit="event.preventDefault(); generateEmailSequence({campaign: document.getElementById('email-campaign').value, audience: document.getElementById('email-audience').value, tone: document.getElementById('email-tone').value, followups: document.getElementById('email-followups').value})">
+            <div class="form-group">
+              <label class="form-label">Campaign Name</label>
+              <input type="text" class="form-input" id="email-campaign" placeholder="e.g., Q1 SaaS Outreach" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Target Audience</label>
+              <input type="text" class="form-input" id="email-audience" placeholder="e.g., startup founders, marketing managers..." required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tone</label>
+              <select class="form-select" id="email-tone">
+                <option>Professional</option>
+                <option>Casual</option>
+                <option>Friendly</option>
+                <option>Urgent</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Value Proposition</label>
+              <textarea class="form-textarea" placeholder="What do you offer? What problem do you solve? e.g., We help businesses save 20+ hours/week with AI automation..." rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Number of Follow-ups: <span id="followup-count" class="mono text-gold">3</span></label>
+              <input type="range" id="email-followups" min="1" max="5" value="3" style="width:100%;accent-color:var(--gold);" oninput="document.getElementById('followup-count').textContent=this.value">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">&#128231; Generate Sequence</button>
+          </form>
+        </div>
+
+        <div class="tool-panel">
+          <h3>&#128172; Email Sequence</h3>
+          <div class="tool-output" id="email-output">
+            <div class="tool-output-placeholder">
+              <div class="icon">&#128231;</div>
+              <div>Set up your campaign and<br>generate a complete email sequence</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="../js/app.js"></script>
+<script src="../js/subscription.js"></script>
+<script src="../js/tools.js"></script>
+<script>Auth.requireAuth();</script>
+</body>
+</html>

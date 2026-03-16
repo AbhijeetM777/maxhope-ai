@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Content Studio - Maxhope.AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="dashboard-layout">
+  <div id="sidebar-container"></div>
+  <main class="dash-main">
+    <div id="topbar-container"></div>
+    <div class="dash-content">
+      <div class="tool-page-header">
+        <div class="tool-page-icon" style="background:var(--green-dim);">&#9997;&#65039;</div>
+        <div>
+          <h2>AI Content Studio</h2>
+          <p>Generate blog posts, social media content, SEO articles & ad copy at scale</p>
+        </div>
+      </div>
+
+      <!-- Content Type Tabs -->
+      <div class="tabs" id="content-tabs">
+        <button class="tab-btn active" onclick="selectContentType(this, 'blog')">&#128221; Blog Post</button>
+        <button class="tab-btn" onclick="selectContentType(this, 'social')">&#128241; Social Media</button>
+        <button class="tab-btn" onclick="selectContentType(this, 'seo')">&#128270; SEO Article</button>
+        <button class="tab-btn" onclick="selectContentType(this, 'ad')">&#128226; Ad Copy</button>
+      </div>
+
+      <div class="tool-layout">
+        <div class="tool-panel">
+          <h3>&#9998; Content Settings</h3>
+          <form onsubmit="event.preventDefault(); generateContent({topic: document.getElementById('content-topic').value, type: selectedContentType, tone: document.getElementById('content-tone').value})">
+            <div class="form-group">
+              <label class="form-label">Topic / Keywords</label>
+              <input type="text" class="form-input" id="content-topic" placeholder="e.g., AI automation for small businesses" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tone</label>
+              <select class="form-select" id="content-tone">
+                <option>Professional</option>
+                <option>Conversational</option>
+                <option>Authoritative</option>
+                <option>Casual</option>
+                <option>Persuasive</option>
+              </select>
+            </div>
+            <div class="form-group" id="platform-group" style="display:none;">
+              <label class="form-label">Target Platform</label>
+              <select class="form-select" id="content-platform">
+                <option>LinkedIn</option>
+                <option>Twitter / X</option>
+                <option>Instagram</option>
+                <option>Facebook</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Length</label>
+              <select class="form-select" id="content-length">
+                <option>Short (100-200 words)</option>
+                <option selected>Medium (200-500 words)</option>
+                <option>Long (500-1000 words)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Additional Instructions</label>
+              <textarea class="form-textarea" placeholder="Any specific angles, points to cover, or style preferences..." rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">&#9997;&#65039; Generate Content</button>
+          </form>
+        </div>
+
+        <div class="tool-panel">
+          <h3>&#128196; Generated Content</h3>
+          <div class="tool-output" id="content-output">
+            <div class="tool-output-placeholder">
+              <div class="icon">&#9997;&#65039;</div>
+              <div>Choose a content type, enter your topic,<br>and generate AI-powered content</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="../js/app.js"></script>
+<script src="../js/subscription.js"></script>
+<script src="../js/tools.js"></script>
+<script>
+Auth.requireAuth();
+let selectedContentType = 'blog';
+function selectContentType(btn, type) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedContentType = type;
+  document.getElementById('platform-group').style.display = type === 'social' ? 'block' : 'none';
+}
+</script>
+</body>
+</html>
